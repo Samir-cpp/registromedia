@@ -15,10 +15,11 @@ printf '%s  %s\n' '7ec965280a073311c339e571cd5de778b9975026cfcbe79f2b1cdcb1e1531
 unzip -q "$archive" -d "$sdk_root/cmdline-tools"
 mv "$sdk_root/cmdline-tools/cmdline-tools" "$sdk_root/cmdline-tools/19.0"
 export ANDROID_HOME="$sdk_root"
+export ANDROID_SDK_ROOT="$sdk_root"
 export ANDROID_USER_HOME="$RUNNER_TEMP/registromedia-android-user"
 manager="$sdk_root/cmdline-tools/19.0/bin/sdkmanager"
 printf 'y\n%.0s' {1..100} > "$RUNNER_TEMP/registromedia-sdk-license-answers"
 "$manager" --sdk_root="$sdk_root" --licenses < "$RUNNER_TEMP/registromedia-sdk-license-answers" > "$RUNNER_TEMP/registromedia-sdk-licenses.log"
 "$manager" --sdk_root="$sdk_root" 'platform-tools' 'platforms;android-35' 'build-tools;35.0.0'
-printf 'ANDROID_HOME=%s\nANDROID_USER_HOME=%s\n' "$sdk_root" "$ANDROID_USER_HOME" >> "$GITHUB_ENV"
+printf 'ANDROID_HOME=%s\nANDROID_SDK_ROOT=%s\nANDROID_USER_HOME=%s\n' "$sdk_root" "$sdk_root" "$ANDROID_USER_HOME" >> "$GITHUB_ENV"
 printf '%s\n%s\n' "$sdk_root/cmdline-tools/19.0/bin" "$sdk_root/platform-tools" >> "$GITHUB_PATH"

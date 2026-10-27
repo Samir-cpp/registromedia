@@ -25,7 +25,7 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run android:assets
-      - run: gradle --project-dir android --no-daemon assembleDebug
+      - run: bash scripts/build-android-ci.sh
       - uses: actions/upload-artifact@v4
         with:
           name: RegistroMedia-Android-debug

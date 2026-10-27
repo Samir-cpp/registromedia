@@ -1,8 +1,10 @@
 plugins { id 'com.android.application' }
+def appVersion = new groovy.json.JsonSlurper().parse(file('../../package.json')).version
+def versionParts = appVersion.tokenize('.').collect { it.toInteger() }
 android {
  namespace 'it.registromedia.app'
  compileSdk 35
- defaultConfig { applicationId 'it.registromedia.app'; minSdk 28; targetSdk 35; versionCode 3; versionName '0.3.0' }
+ defaultConfig { applicationId 'it.registromedia.app'; minSdk 28; targetSdk 35; versionCode (versionParts[0] * 10000 + versionParts[1] * 100 + versionParts[2]); versionName appVersion }
  signingConfigs { debug { if (System.getenv('REGISTROMEDIA_DEBUG_KEYSTORE')) storeFile file(System.getenv('REGISTROMEDIA_DEBUG_KEYSTORE')) } }
  buildTypes { release { minifyEnabled false } }
  compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }

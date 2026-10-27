@@ -1,6 +1,6 @@
 {
   "name": "registromedia",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": true,
   "description": "Registro personale offline per Windows, Android e web",
   "main": "desktop/main.cjs",

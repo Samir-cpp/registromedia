@@ -8,7 +8,7 @@ on:
       tag:
         description: Existing version tag to publish
         required: true
-        default: v0.3.1
+        default: v0.3.2
 permissions:
   contents: read
 concurrency:
@@ -89,7 +89,7 @@ jobs:
           gradle-version: '8.11.1'
       - run: npm ci
       - run: npm run android:assets
-      - run: gradle --project-dir android --no-daemon assembleDebug lintDebug
+      - run: bash scripts/build-android-ci.sh
       - name: Name Android download
         run: |
           mkdir -p dist
