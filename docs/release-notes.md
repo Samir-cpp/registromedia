@@ -2,8 +2,8 @@ Registro personale offline per Windows e Android. Non richiede hosting o account
 
 ## Installazione
 
-- **Windows:** scarica `RegistroMedia-0.3.0-x64-Setup.exe` per l'installer oppure `RegistroMedia-0.3.0-x64-Portable.zip`, estrai tutti i file e apri `RegistroMedia.exe`.
-- **Android:** scarica e installa `RegistroMedia-0.3.0-Android-debug.apk`. Richiede Android 9 o successivo e Android System WebView aggiornato.
+- **Windows:** scarica il file `*-Setup.exe` per l'installer oppure il file `*-Portable.zip`, estrai tutti i file e apri `RegistroMedia.exe`.
+- **Android:** scarica e installa il file `*-Android-debug.apk`. Richiede Android 9 o successivo e Android System WebView aggiornato.
 
 Crea un account locale, aggiungi le materie e inserisci i voti. Date e periodi sono automatici: settembre–dicembre e gennaio–giugno. Include medie ponderate, obiettivi, simulatore e agenda.
 
