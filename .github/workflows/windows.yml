@@ -1,0 +1,30 @@
+name: Installer Windows
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Verifica avvio desktop
+        run: npm run test:desktop
+      - name: Genera installer Windows x64
+        run: npm run dist:win
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Carica installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: RegistroMedia-Windows-x64
+          path: dist/*-Setup.exe
+          if-no-files-found: error
+          retention-days: 14

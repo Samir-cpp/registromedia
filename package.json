@@ -1,0 +1,56 @@
+{
+  "name": "registromedia",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Registro personale offline per Windows, Android e web",
+  "main": "desktop/main.cjs",
+  "scripts": {
+    "start": "node server.cjs",
+    "test": "node --test",
+    "desktop": "electron .",
+    "dist:win": "electron-builder --win nsis --x64 --publish never",
+    "test:desktop": "electron . --smoke-test",
+    "dist:win:portable": "electron-builder --win zip --x64 --publish never --config.win.signAndEditExecutable=false",
+    "android:assets": "node scripts/android-assets.cjs",
+    "test:ui": "node scripts/ui-smoke.cjs"
+  },
+  "devDependencies": {
+    "electron": "^42.0.0",
+    "electron-builder": "^26.0.0",
+    "fake-indexeddb": "^6.2.6",
+    "playwright": "^1.64.1"
+  },
+  "build": {
+    "appId": "it.registromedia.app",
+    "productName": "RegistroMedia",
+    "files": [
+      "index.html",
+      "style.css",
+      "app.mjs",
+      "model.mjs",
+      "vault.mjs",
+      "argo.mjs",
+      "desktop/**",
+      "icon.svg",
+      "package.json",
+      "manifest.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "artifactName": "RegistroMedia-${version}-${arch}-Setup.${ext}",
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "RegistroMedia"
+    }
+  },
+  "author": "RegistroMedia",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=24"
+  }
+}
