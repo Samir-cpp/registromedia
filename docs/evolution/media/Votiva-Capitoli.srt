@@ -1,0 +1,35 @@
+1
+00:00:00,000 --> 00:00:06,960
+Da RegistroMedia a Votiva: interfacce reali, voti dimostrativi.
+
+2
+00:00:06,960 --> 00:00:13,960
+Idea iniziale: dati Argo e medie. Le API non sono mai state attivate.
+
+3
+00:00:13,960 --> 00:00:28,960
+RegistroMedia 0.3: medie, agenda e simulatore; più funzioni e maggiore densità.
+
+4
+00:00:28,960 --> 00:00:44,160
+RegistroMedia 0.4: importazione OCR locale con controllo dei dati. Funzione poi rimossa.
+
+5
+00:00:44,160 --> 00:00:51,160
+Scelta finale: meno funzioni e automazione, più semplicità.
+
+6
+00:00:51,160 --> 00:01:29,200
+Votiva 1.0.1: materie, voti a quarti, grafico, periodi configurabili, temi e account.
+
+7
+00:01:29,200 --> 00:01:37,200
+Il bilancio: APK da 15,6 a 3,04 MB; si rinuncia all’OCR e all’agenda.
+
+8
+00:01:37,200 --> 00:01:45,200
+Windows e Android hanno build installabili. iPhone richiede il sito HTTPS pubblicato.
+
+9
+00:01:45,200 --> 00:01:52,160
+Test e build riusciti; collaudo fisico ancora necessario. Nessuna promessa di zero bug.

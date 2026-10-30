@@ -83,3 +83,7 @@ Non servono Tesseract, modelli OCR, account Argo o chiavi API. Electron resta la
 - [Documento PDF](docs/documents/RegistroMedia-Documentazione-Completa.pdf) e [Word modificabile](docs/documents/RegistroMedia-Documentazione-Completa.docx)
 
 Per rigenerare PDF e Word: `python -m pip install -r docs/requirements-docs.txt`, poi `python scripts/build-project-docs.py`. Il renderer usa DejaVu Sans in `/usr/share/fonts/truetype/dejavu`; su altri sistemi adatta il percorso nel renderer.
+
+### Storia del progetto, screenshot e video
+
+La [retrospettiva multimediale](docs/evolution/README.md) racconta l’idea iniziale, i cambi di direzione, i miglioramenti e le rinunce: PDF e Word illustrati, 18 screenshot, video MP4, GIF e presentazione HTML animata. I dati sono dimostrativi e le interfacce storiche sono ricostruite dai commit indicati.

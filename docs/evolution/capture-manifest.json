@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-30",
+  "syntheticData": true,
+  "historicalCommits": [
+    "bedd5f8",
+    "f17d702"
+  ],
+  "currentCommit": "6a459f5",
+  "screenshots": [
+    "01-registromedia-03-accesso.png",
+    "01-registromedia-03-account.png",
+    "01-registromedia-03-desktop.png",
+    "02-registromedia-04-accesso.png",
+    "02-registromedia-04-desktop.png",
+    "02-registromedia-04-importazione.png",
+    "02-registromedia-04-strumenti.png",
+    "03-votiva-101-accesso.png",
+    "03-votiva-101-desktop.png",
+    "04-votiva-voti-matematica.png",
+    "05-votiva-inserimento-voto.png",
+    "06-votiva-periodi.png",
+    "07-votiva-scuro.png",
+    "08-votiva-mobile.png",
+    "09-votiva-mobile-completo.png",
+    "10-votiva-tablet.png",
+    "11-votiva-account.png",
+    "12-votiva-password.png"
+  ],
+  "videos": [
+    "00-intro.webm",
+    "01-idea.webm",
+    "02-prima-app.webm",
+    "03-ocr.webm",
+    "04-scelta.webm",
+    "05-votiva-demo.webm",
+    "06-bilancio.webm",
+    "07-piattaforme.webm",
+    "08-finale.webm"
+  ],
+  "captureEnvironment": "Chromium locale su Linux; viste mobile/tablet simulate"
+}

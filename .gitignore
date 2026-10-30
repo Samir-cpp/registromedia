@@ -13,3 +13,6 @@ android/build/
 *.keystore
 *.jks
 vendor/ocr/
+
+# Intermediate browser recordings; the final MP4 and GIF are versioned.
+docs/evolution/media/*.webm
