@@ -1009,3 +1009,24 @@ summary {
     scroll-behavior: auto !important;
   }
 }
+
+/* Keep controls clear of iPhone notches and the Home indicator in standalone mode. */
+body {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+.topbar {
+  padding-top: calc(22px + env(safe-area-inset-top));
+}
+main {
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+}
+.auth-view {
+  padding-top: max(28px, env(safe-area-inset-top));
+  padding-bottom: max(28px, env(safe-area-inset-bottom));
+}
+@media (max-width: 700px) {
+  .topbar {
+    padding-top: calc(16px + env(safe-area-inset-top));
+  }
+}

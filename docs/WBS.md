@@ -1,6 +1,6 @@
 # Votiva — Work Breakdown Structure
 
-Documento 2.0 · 30 ottobre 2026 · software 1.0.0. Sostituisce la WBS 0.4; le funzionalità ritirate non sono più deliverable del prodotto.
+Documento 2.0 · 30 ottobre 2026 · software 1.0.1. Sostituisce la WBS 0.4; le funzionalità ritirate non sono più deliverable del prodotto.
 
 24 pacchetti: R = realizzato nel codice e nei controlli indicati; V = verifica o attivazione ancora necessaria; P = attività futura. I ruoli sono proposti; non sono stime di costo, assegnazioni o date inventate. La realizzazione della pipeline non prova che una specifica release sia già pubblicata.
 

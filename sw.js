@@ -1,4 +1,4 @@
-const CACHE = "registromedia-votiva-1";
+const CACHE = "registromedia-votiva-1-0-1";
 const FILES = [
   "./",
   "./index.html",

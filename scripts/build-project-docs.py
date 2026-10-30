@@ -111,7 +111,7 @@ class PageCanvas(canvas.Canvas):
             self.drawRightString(width - 54, 26, f'{self._pageNumber} / {total}')
             if self._pageNumber > 1:
                 self.setFont('DocSans-Bold', 7)
-                self.drawString(54, height - 32, 'VOTIVA / RELAZIONE E WBS / SOFTWARE 1.0.0')
+                self.drawString(54, height - 32, 'VOTIVA / RELAZIONE E WBS / SOFTWARE 1.0.1')
             canvas.Canvas.showPage(self)
         canvas.Canvas.save(self)
 
@@ -138,7 +138,7 @@ word.core_properties.title = TITLE
 word.core_properties.subject = 'Registro personale offline — architettura, manuale, verifiche e WBS'
 word.core_properties.author = 'Votiva'
 header = sec.header.paragraphs[0]
-run = header.add_run('VOTIVA  /  RELAZIONE E WBS  /  SOFTWARE 1.0.0')
+run = header.add_run('VOTIVA  /  RELAZIONE E WBS  /  SOFTWARE 1.0.1')
 run.font.size = Pt(8)
 run.font.color.rgb = RGBColor.from_string(MUTED[1:])
 footer = sec.footer.paragraphs[0]
@@ -149,17 +149,17 @@ for r in footer.runs: r.font.size = Pt(8)
 story = [Spacer(1, 55), Paragraph('VOTIVA', styles['cover_label']), Spacer(1, 25),
          Paragraph('Documentazione<br/>completa del progetto', styles['cover_title']), Spacer(1, 25),
          Paragraph('Relazione tecnica, guida funzionale<br/>e Work Breakdown Structure', styles['cover_sub']),
-         Spacer(1, 45), Paragraph('Software 1.0.0 · Registro personale offline', styles['p']),
+         Spacer(1, 45), Paragraph('Software 1.0.1 · Registro personale offline', styles['p']),
          Paragraph('Windows · Android · Frontend web', styles['p']), Spacer(1, 40),
          Paragraph('Documento 2.0 — ' + DATE, styles['p']),
-         Paragraph('Perimetro: Votiva 1.0.0. Stati realizzati, verifiche e attività future esplicitamente distinti.', styles['p']),
+         Paragraph('Perimetro: Votiva 1.0.1. Stati realizzati, verifiche e attività future esplicitamente distinti.', styles['p']),
          Spacer(1, 30), Paragraph('Nessun dato personale reale, password o chiave privata è incluso in questo documento.', styles['p']), PageBreak()]
 word.add_paragraph('VOTIVA', 'Subtitle')
 word.add_paragraph('Documentazione completa del progetto', 'Title')
 word.add_paragraph('Relazione tecnica, guida funzionale e Work Breakdown Structure', 'Subtitle')
-word.add_paragraph('Software 1.0.0 · Registro personale offline\nWindows · Android · Frontend web')
+word.add_paragraph('Software 1.0.1 · Registro personale offline\nWindows · Android · Frontend web')
 word.add_paragraph('Documento 2.0 — ' + DATE)
-word.add_paragraph('Perimetro: Votiva 1.0.0. Stati realizzati, verifiche e attività future esplicitamente distinti.')
+word.add_paragraph('Perimetro: Votiva 1.0.1. Stati realizzati, verifiche e attività future esplicitamente distinti.')
 word.add_paragraph('Nessun dato personale reale, password o chiave privata è incluso in questo documento.')
 word.add_page_break()
 

@@ -1,6 +1,6 @@
 # Votiva
 
-Voti e medie, senza distrazioni. App personale offline per Windows e Android, sito installabile dalla schermata Home di iPhone. Nuova identità di RegistroMedia, versione **1.0.0**.
+Voti e medie, senza distrazioni. App personale offline per Windows e Android, sito installabile dalla schermata Home di iPhone. Nuova identità di RegistroMedia, versione **1.0.1**.
 
 ## Cosa trovi
 
@@ -16,11 +16,11 @@ Argo, riconoscimento screenshot, agenda e simulatore sono stati rimossi, insieme
 
 ## Installazione
 
-Le nuove build sono pubblicate nella [pagina delle release](https://github.com/Samir-cpp/registromedia/releases). Controlla che la versione sia **v1.0.0**: i download 0.4 appartengono alla versione precedente.
+Le nuove build sono pubblicate nella [pagina delle release](https://github.com/Samir-cpp/registromedia/releases). Controlla che la versione sia **v1.0.1**: i download 0.4 appartengono alla versione precedente.
 
-**Windows:** esegui `Votiva-1.0.0-x64-Setup.exe` oppure estrai tutto `Votiva-1.0.0-x64-Portable.zip` e apri `Votiva.exe`. La build non ha certificato di firma commerciale.
+**Windows:** esegui `Votiva-1.0.1-x64-Setup.exe` oppure estrai tutto `Votiva-1.0.1-x64-Portable.zip` e apri `Votiva.exe`. La build non ha certificato di firma commerciale.
 
-**Android:** installa `Votiva-1.0.0-Android-debug.apk`, Android 9 o successivo con System WebView aggiornato. L’APK usa una firma di sviluppo: se non è compatibile con la vecchia firma, esporta un backup e conserva la password **prima di disinstallare**. Non cancellare i dati dell’app senza backup.
+**Android:** installa `Votiva-1.0.1-Android-debug.apk`, Android 9 o successivo con System WebView aggiornato. L’APK usa una firma di sviluppo: se non è compatibile con la vecchia firma, esporta un backup e conserva la password **prima di disinstallare**. Non cancellare i dati dell’app senza backup.
 
 **iPhone / iPad:** apri il sito pubblicato in Safari → Condividi → Aggiungi alla schermata Home. Primo accesso online; poi l’app funziona offline, anche dopo aver chiuso Safari. APK ed EXE non si installano su iOS. Il sito deve usare HTTPS, non basta aprire `index.html` da File.
 

@@ -1,6 +1,6 @@
 {
   "name": "registromedia",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Votiva: voti e medie, offline e personali",
   "main": "desktop/main.cjs",

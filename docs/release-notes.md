@@ -1,4 +1,4 @@
-# Votiva 1.0.0
+# Votiva 1.0.1
 
 Nuovo nome e logo, registro più essenziale, layout per telefono, tablet e desktop. Rimossi collegamenti Argo, importazione screenshot/OCR, agenda e simulatore; rimossi modelli e dipendenze OCR dal pacchetto.
 
