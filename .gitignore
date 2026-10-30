@@ -12,3 +12,4 @@ android/app/src/main/assets/
 android/build/
 *.keystore
 *.jks
+vendor/ocr/

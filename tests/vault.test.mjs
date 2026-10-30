@@ -15,3 +15,7 @@ test('archivio cifrato, password errata, persistenza, isolamento e cancellazione
  const badRevision=structuredClone(backup);badRevision.account.revision++;await assert.rejects(vault.restoreBackup(badRevision,password,true));
  assert.equal((await vault.login('bob',password)).data.grades.length,0);
 });
+
+test('accesso mantenuto con chiave non esportabile, Esci e cancellazione revocano l’accesso',async()=>{
+ const session=await vault.register({username:'persistente',name:'Studente',password});await vault.rememberSession(session);const resumed=await vault.loadRememberedSession();assert.equal(resumed.username,'persistente');assert.equal(resumed.key.extractable,false);await vault.save(resumed,schoolData);assert.deepEqual((await vault.loadRememberedSession()).data,schoolData);await vault.logout();assert.equal(await vault.loadRememberedSession(),null);await vault.rememberSession(resumed);await vault.deleteAccount(resumed,password);assert.equal(await vault.loadRememberedSession(),null);
+});

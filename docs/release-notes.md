@@ -1,20 +1,21 @@
-Registro personale offline per Windows e Android. Non richiede hosting o account Argo.
+RegistroMedia 0.4 · più semplice, con importazione da screenshot.
+
+## Novità
+
+- Una sola schermata con media generale e due schede: Materie e Voti.
+- Rosso sotto il 6, verde dal 6 in su, anche con indicazioni testuali.
+- Tema chiaro, scuro o automatico, con preferenza salvata.
+- Resti collegato dopo aver chiuso e riaperto l’app, finché non scegli **Account → Esci**. Non c'è più il blocco automatico dopo 15 minuti. Usa questa funzione solo su un dispositivo personale.
+- **Importa voti e materie**: carica fino a 5 screenshot oppure incolla il testo. Riconoscimento locale, anteprima da correggere e confermare, rilevamento dei voti già presenti. Le immagini non vengono inviate a servizi esterni né salvate nell’account.
+- Per i voti vecchi la data viene letta dallo screenshot; se manca va completata. Non viene usata la data di oggi. I segni ambigui, per esempio 6+, richiedono una correzione numerica.
+- Agenda e simulatore sono disponibili in Account → Agenda e simulatore; non occupano la schermata principale. I dati precedenti non vengono cancellati.
 
 ## Installazione
 
-- **Windows:** scarica il file `*-Setup.exe` per l'installer oppure il file `*-Portable.zip`, estrai tutti i file e apri `RegistroMedia.exe`.
-- **Android:** scarica e installa il file `*-Android-debug.apk`. Richiede Android 9 o successivo e Android System WebView aggiornato.
+**Windows:** scarica `*-Setup.exe` per l'installer, oppure estrai completamente `*-Portable.zip` e apri `RegistroMedia.exe`.
 
-Crea un account locale, aggiungi le materie e inserisci i voti. Date e periodi sono automatici: settembre–dicembre e gennaio–giugno. Include medie ponderate, obiettivi, simulatore e agenda.
+**Android:** scarica `*-Android-debug.apk`. Richiede Android 9 o successivo e WebView aggiornato. Questa build ha una firma di sviluppo che può differire dalla versione precedente: **prima di disinstallare o cambiare APK, esporta il backup cifrato e conserva la password**. Se il sistema richiede di disinstallare la versione vecchia, ripristina poi quel backup.
 
-## Dati personali
+I backup cifrati della versione 0.3 sono compatibili. Non c'è sincronizzazione automatica o recupero password. Il riconoscimento non è infallibile: controlla sempre materia, data e voto prima di confermare, soprattutto con schermate Argo complesse, tagliate o poco nitide.
 
-I dati sono cifrati sul dispositivo. Non c'è sincronizzazione automatica: per passare all'altro dispositivo usa un backup cifrato. Conserva password e backup: la password non può essere recuperata.
-
-## Versione di prova
-
-I programmi Windows non sono firmati digitalmente. L'APK Android usa una firma di sviluppo. Se hai già installato l'APK scaricato dalla chat, questa build GitHub può avere una firma diversa: **esporta prima il backup cifrato**, perché potrebbe essere necessario disinstallare la copia precedente, cancellando i dati locali. La stessa precauzione vale per future build di sviluppo, che possono cambiare firma.
-
-Questa è una prerelease, non una pubblicazione sugli store. Non è stata collaudata su tutti i dispositivi. Il sito iPhone non è pubblicato. Il collegamento Argo apre soltanto il sito ufficiale e non importa i voti.
-
-`SHA256SUMS.txt` contiene i checksum dei file scaricabili.
+Windows non è firmato digitalmente. Versione di prova, non distribuita sugli store e non ancora collaudata su tutti i dispositivi fisici. Nessuna integrazione API Argo attiva. I checksum sono nel file `SHA256SUMS.txt`.

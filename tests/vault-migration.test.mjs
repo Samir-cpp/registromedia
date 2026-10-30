@@ -1,0 +1,9 @@
+import 'fake-indexeddb/auto';import {test} from 'node:test';import assert from 'node:assert/strict';
+test('aggiornamento archivio v1 conserva gli account e i voti precedenti',async()=>{
+ const password='Password-di-migrazione-2026',salt=new Uint8Array(16).fill(9),iv=new Uint8Array(12).fill(5),encode=new TextEncoder();
+ const source=await crypto.subtle.importKey('raw',encode.encode(password),'PBKDF2',false,['deriveKey']);const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:600000,hash:'SHA-256'},source,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+ const data={subjects:[{id:'math',name:'Matematica',target:7}],grades:[{id:'old-grade',subjectId:'math',value:7.5,weight:1,date:'2025-12-12',type:'Scritto',note:'Voto precedente'}],tasks:[]};
+ const ciphertext=await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:encode.encode('3:legacy:0')},key,encode.encode(JSON.stringify({name:'Studente',data})));const b64=a=>Buffer.from(a).toString('base64');
+ await new Promise((resolve,reject)=>{const r=indexedDB.open('registromedia-private-v3',1);r.onupgradeneeded=()=>r.result.createObjectStore('accounts',{keyPath:'username'});r.onsuccess=()=>{const db=r.result,tx=db.transaction('accounts','readwrite');tx.objectStore('accounts').put({username:'legacy',version:3,iterations:600000,revision:0,salt:b64(salt),iv:b64(iv),ciphertext:b64(ciphertext)});tx.oncomplete=()=>{db.close();resolve();};};r.onerror=reject;});
+ const vault=await import('../vault.mjs');assert.equal(await vault.loadRememberedSession(),null);const session=await vault.login('legacy',password);assert.deepEqual(session.data,data);await vault.rememberSession(session);assert.equal((await vault.loadRememberedSession()).data.grades[0].id,'old-grade');await vault.logout();assert.deepEqual((await vault.login('legacy',password)).data,data);
+});

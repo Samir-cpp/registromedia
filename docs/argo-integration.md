@@ -1,6 +1,6 @@
 # Collegamento ad Argo: stato e condizioni per la sincronizzazione
 
-## Cosa funziona nella versione 0.3.0
+## Cosa funziona nella versione 0.4.0
 
 Il pulsante “Apri il login ufficiale Argo” apre `https://www.portaleargo.it/famiglia/` in una nuova scheda o, su Windows, nel browser di sistema. Il collegamento è pubblicato nelle pagine ufficiali consultate il 27 ottobre 2026:
 
@@ -23,7 +23,7 @@ La pagina ufficiale Argo di destinazione è stata individuata dai collegamenti s
 - Il server web distribuisce solo file esplicitamente consentiti. Header contro framing, invio del referrer e uso di fotocamera/microfono/geolocalizzazione; CSP che limita script e connessioni all'origine e blocca invii di form.
 - Nessun analytics, tracker o caricamento remoto del contenuto del registro. I dati del registro personale vengono conservati in IndexedDB, cifrati con la password del profilo locale.
 
-Nella versione 0.3 i dati personali e i backup sono cifrati con AES-GCM e PBKDF2; il nome utente resta visibile. La password e la chiave non vengono salvate. La cifratura non protegge da un dispositivo compromesso o da una sessione già sbloccata. Non c'è recupero password. La cancellazione del profilo non cancella backup o copie su altri dispositivi. Le app Windows/Android sono offline e la versione web richiede HTTPS; il sito non è pubblicato. La build Windows non è firmata; l'APK di prova usa una firma di sviluppo. Nessuna prova su dispositivi fisici è stata ancora eseguita. Vedi README.md per i dettagli.
+Nella versione 0.3 i dati personali e i backup sono cifrati con AES-GCM e PBKDF2; il nome utente resta visibile. La password non viene salvata. Per mantenere l’accesso viene conservata sul dispositivo una CryptoKey non esportabile fino a Esci. La cifratura non protegge da un dispositivo compromesso o da una sessione già sbloccata. Non c'è recupero password. La cancellazione del profilo non cancella backup o copie su altri dispositivi. Le app Windows/Android sono offline e la versione web richiede HTTPS; il sito non è pubblicato. La build Windows non è firmata; l'APK di prova usa una firma di sviluppo. Nessuna prova su dispositivi fisici è stata ancora eseguita. Vedi README.md per i dettagli.
 
 I test dimostrano proprietà specifiche, non l'assenza assoluta di vulnerabilità. Il progetto non è affiliato ad Argo o alla scuola e non offre una garanzia legale o una certificazione di conformità.
 

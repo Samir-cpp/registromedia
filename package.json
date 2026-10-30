@@ -1,6 +1,6 @@
 {
   "name": "registromedia",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "private": true,
   "description": "Registro personale offline per Windows, Android e web",
   "main": "desktop/main.cjs",
@@ -11,14 +11,18 @@
     "dist:win": "electron-builder --win nsis --x64 --publish never",
     "test:desktop": "electron . --smoke-test",
     "dist:win:portable": "electron-builder --win zip --x64 --publish never --config.win.signAndEditExecutable=false",
-    "android:assets": "node scripts/android-assets.cjs",
-    "test:ui": "node scripts/ui-smoke.cjs"
+    "android:assets": "node scripts/ocr-assets.cjs && node scripts/android-assets.cjs",
+    "test:ui": "node scripts/ui-smoke.cjs",
+    "ocr:assets": "node scripts/ocr-assets.cjs",
+    "postinstall": "node scripts/ocr-assets.cjs"
   },
   "devDependencies": {
+    "@tesseract.js-data/ita": "^1.0.0",
     "electron": "^42.0.0",
     "electron-builder": "^26.0.0",
     "fake-indexeddb": "^6.2.6",
-    "playwright": "^1.64.1"
+    "playwright": "^1.64.1",
+    "tesseract.js": "^6.0.1"
   },
   "build": {
     "appId": "it.registromedia.app",
@@ -33,7 +37,12 @@
       "desktop/**",
       "icon.svg",
       "package.json",
-      "manifest.json"
+      "manifest.json",
+      "theme.js",
+      "import-model.mjs",
+      "import-ui.mjs",
+      "ocr.mjs",
+      "vendor/ocr/**"
     ],
     "win": {
       "target": "nsis"
