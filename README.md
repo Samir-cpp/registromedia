@@ -59,3 +59,12 @@ Il frontend è responsive per iPhone; per usarlo da Safari serve un indirizzo HT
 ## Verifica
 
 Test Node per medie, date, parser, duplicati, cifratura, accesso persistente, Esci, migrazione degli account e ripristino di backup. Smoke Chromium desktop/mobile con OCR reale locale su screenshot sintetico, correzione delle date mancanti, conferma esplicita, riavvio del browser senza login, logout tra finestre, temi, colori e uso offline. Nessun dato reale dello studente usato nei test. Le prove nel browser e le build non sostituiscono il collaudo su telefoni e PC reali.
+
+## Documentazione di progetto
+
+- [Relazione completa e WBS — PDF](docs/documents/RegistroMedia-Documentazione-Completa.pdf)
+- [Versione Word modificabile](docs/documents/RegistroMedia-Documentazione-Completa.docx)
+- [WBS leggibile su GitHub](docs/WBS.md) e [dizionario WBS per Excel — CSV](docs/wbs.csv)
+- [Sorgente della relazione](docs/PROJECT-DOCUMENTATION.md)
+
+La relazione descrive la baseline 0.4.0, con funzioni, formule, architettura, dati, OCR, sicurezza, installazione, verifiche e limiti. La WBS contiene 44 pacchetti con stati distinti tra realizzato, da validare e pianificato; non inventa costi o scadenze. Per rigenerare PDF/Word: installare i requisiti di `docs/requirements-docs.txt` e usare `python3 scripts/build-project-docs.py`. L'esportatore usa i font DejaVu in `/usr/share/fonts/truetype/dejavu`, disponibili nell'ambiente di generazione; adattare il percorso su altri sistemi.

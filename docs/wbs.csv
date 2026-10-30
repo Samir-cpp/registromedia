@@ -1,0 +1,45 @@
+﻿ID;Padre;Pacchetto di lavoro;Deliverable;Criterio di accettazione;Dipendenze;Ruolo proposto;Stato;Evidenza / riferimento
+1.1;1;Ambito offline;Baseline del prodotto personale;Il documento distingue app locali, frontend web e assenza di cloud;—;Referente utente / sviluppatore;R;"README.md; PROJECT-DOCUMENTATION.md §1–2"
+1.2;1;Regole dei periodi;Calendario settembre–dicembre / gennaio–giugno;31 dicembre e 1 gennaio ricadono nei periodi dello stesso anno scolastico;1.1;Referente utente / sviluppatore;R;"model.mjs; tests/model.test.mjs"
+1.3;1;Limiti e accettazione;Requisiti ed esclusioni dichiarati;Nessuna promessa di API Argo, recupero password o sito iOS già pubblicato;1.1;Referente utente / sviluppatore;R;PROJECT-DOCUMENTATION.md §2 e §12
+2.1;2;Dashboard minima;Vista Materie/Voti e riepilogo;"Le azioni frequenti sono visibili; agenda e simulatore non occupano la home";1.3;Sviluppatore / collaudatore;R;"index.html; app.mjs"
+2.2;2;Moduli progressivi;Inserimento rapido con opzioni secondarie;Data precompilata e modifica dei campi aggiuntivi disponibili;"2.1; 4.2";Sviluppatore / collaudatore;R;"index.html; scripts/ui-smoke.cjs"
+2.3;2;Temi;Chiaro, scuro e automatico;Preferenza conservata dopo riavvio del browser;2.1;Sviluppatore / collaudatore;R;"theme.js; style.css; scripts/ui-smoke.cjs"
+2.4;2;Stato delle medie;Rosso/verde e testo esplicativo;"5,5 insufficiente; 6 sufficiente; materia senza voti senza falso zero";"4.4; 4.5";Sviluppatore / collaudatore;R;"app.mjs; style.css; scripts/ui-smoke.cjs"
+2.5;2;Accessibilità completa;Rapporto con tastiera e tecnologie assistive;Eseguire prove documentate di focus, lettura, contrasto e ingrandimento;"2.1; 2.2; 2.3";Sviluppatore / collaudatore;V;Collaudo indipendente da pianificare
+3.1;3;Cifratura del profilo;Archivio AES-GCM e derivazione PBKDF2;Password errata o contenuto alterato non sbloccano i dati;1.3;Sviluppatore;R;"vault.mjs; tests/vault.test.mjs"
+3.2;3;Accesso persistente;Sessione locale con CryptoKey;Riapertura senza password dopo chiusura del browser, fino a Esci;3.1;Sviluppatore;R;"vault.mjs; scripts/ui-smoke.cjs"
+3.3;3;Uscita e rimozione profilo;Revoca della sessione e cancellazione locale;"Esci rimuove la chiave; eliminazione protetta dalla password";3.2;Sviluppatore;R;"vault.mjs; app.mjs; tests/vault.test.mjs"
+3.4;3;Migrazione e revisioni;Schema aggiornato senza perdita dei record;"Profilo precedente conservato; scrittura da revisione obsoleta rifiutata";3.1;Sviluppatore;R;"tests/vault-migration.test.mjs; tests/vault.test.mjs"
+3.5;3;Backup e ripristino;JSON cifrato compatibile formato 3;Ripristino con password corretta e conferma di sostituzione;"3.1; 3.4";Sviluppatore;R;"vault.mjs; scripts/ui-smoke.cjs"
+4.1;4;Materie;CRUD con obiettivo facoltativo;"Nomi validi e unici; cancellazione confermata con dipendenze";1.3;Sviluppatore / referente utente;R;"model.mjs; app.mjs"
+4.2;4;Voti;CRUD con data, peso, tipo e nota;Rifiuto di voto fuori 1–10, peso invalido o materia inesistente;"4.1; 1.2";Sviluppatore / referente utente;R;"model.mjs; tests/model.test.mjs"
+4.3;4;Filtri temporali;Periodi e anni scolastici distinti;"Voti storici filtrati per data; luglio/agosto non accettati";4.2;Sviluppatore / referente utente;R;"model.mjs; app.mjs"
+4.4;4;Media per materia;Calcolo ponderato;6 con peso 1 e 9 con peso 2 danno 8;4.2;Sviluppatore / referente utente;R;"weightedAverage; tests/model.test.mjs"
+4.5;4;Media generale;Media delle materie con voti;Materie 6 e 9 danno 7,5 indipendentemente dal numero dei voti;4.4;Sviluppatore / referente utente;R;"generalAverage; tests/model.test.mjs"
+5.1;5;Motore OCR locale;Worker, WASM e modello italiano inclusi;Il riconoscimento non richiede servizi esterni o chiavi API;"1.3; 7.1; 7.2";Sviluppatore / collaudatore;R;"ocr.mjs; scripts/ocr-assets.cjs"
+5.2;5;Acquisizione e preparazione;Immagini scelte e limiti applicati;"PNG/JPG/WebP; 1–5 file; ridimensionamento e gestione immagine scura";5.1;Sviluppatore / collaudatore;R;"ocr.mjs; import-ui.mjs"
+5.3;5;Parser del testo;Candidati materia/voto/data;"Date mancanti e segni ambigui richiedono correzione; anno selezionabile";"1.2; 5.1";Sviluppatore / collaudatore;R;"import-model.mjs; tests/import.test.mjs"
+5.4;5;Anteprima modificabile;Revisione prima del salvataggio;"Nessun dato persistito prima della conferma; tutte le righe selezionate valide";"5.3; 2.2";Sviluppatore / collaudatore;R;"import-ui.mjs; scripts/ui-smoke.cjs"
+5.5;5;Duplicati e fusione;Importazione senza doppioni equivalenti;"Stessa materia/data/valore/peso/tipo non duplicata; note escluse dalla chiave";"5.4; 3.4";Sviluppatore / collaudatore;R;"mergeImport; tests/import.test.mjs"
+5.6;5;Persistenza dell’importazione;Commit validato dell’insieme;Errore di validazione o revisione non applica un salvataggio parziale;"5.5; 3.1; 4.2";Sviluppatore / collaudatore;R;"app.mjs; vault.mjs"
+5.7;5;Campione OCR reale;Rapporto su schermate eterogenee anonimizzate;Misurare errori su date, voti e materie senza inventare una precisione;"5.1; 5.4";Sviluppatore / collaudatore;V;Prove con campione rappresentativo non completate
+6.1;6;Agenda;Compiti, verifiche e stato completato;Dati precedenti conservati e consultabili dal menu secondario;"4.1; 3.1";Sviluppatore;R;"model.mjs; app.mjs"
+6.2;6;Obiettivi e simulatore;Calcolo del prossimo voto necessario;Obiettivo irraggiungibile con un voto segnalato senza cambiare lo storico;4.4;Sviluppatore;R;"neededGrade; app.mjs; tests/model.test.mjs"
+6.3;6;Confronto dei periodi;Riepilogo secondario annuale;Confronto solo sui voti dei periodi dell’anno selezionato;"4.3; 4.5";Sviluppatore;R;"app.mjs; index.html"
+7.1;7;Wrapper Windows;Electron con origine locale;"Sandbox e isolamento mantenuti; niente Node nel renderer";"2.1; 3.1";Sviluppatore / responsabile rilascio;R;desktop/main.cjs
+7.2;7;Wrapper Android;WebView con asset locali;File ammessi locali, selettore controllato, canali nativi limitati;"2.1; 3.1";Sviluppatore / responsabile rilascio;R;"MainActivity.java; AndroidManifest.xml"
+7.3;7;Frontend web;Manifest e risorse per uso responsive/offline;"Avvio locale e cache supportati; nessuna falsa dichiarazione di hosting";"2.1; 5.1";Sviluppatore / responsabile rilascio;R;"server.cjs; manifest.json; sw.js"
+7.4;7;Pacchetti Windows;Installer e archivio portabile;Build su runner Windows e risorse richieste incluse;"7.1; 8.3";Sviluppatore / responsabile rilascio;R;"package.json; workflow release.yml"
+7.5;7;APK Android;Build di sviluppo firmata;"AssembleDebug e lint completati; asset OCR inclusi";"7.2; 8.4";Sviluppatore / responsabile rilascio;R;"android/app/build.gradle; workflow release.yml"
+7.6;7;Matrice dispositivi fisici;Rapporto Android/Windows e Safari;Provare installazione, OCR, backup e persistenza su dispositivi concordati;"7.4; 7.5; 7.3";Sviluppatore / responsabile rilascio;V;Collaudo fisico e Safari non completati
+8.1;8;Test del dominio e archivio;Suite Node;Formule, parser, migrazione, sessione e backup verificati;"3.1; 3.4; 4.4; 5.3";Collaudatore / sviluppatore;R;tests/*.test.mjs: 13 test nella baseline
+8.2;8;Test end-to-end web;Smoke Chromium e screenshot sintetico;OCR reale locale, conferma, temi, colori, riavvio, Esci e offline;"2.1; 3.2; 5.4";Collaudatore / sviluppatore;R;scripts/ui-smoke.cjs
+8.3;8;Smoke desktop;Avvio e OCR reale in Electron;Screenshot sintetico letto dentro la finestra desktop;"7.1; 5.1";Collaudatore / sviluppatore;R;"desktop/main.cjs --smoke-test; CI Windows"
+8.4;8;Controlli Android;Compilazione e lint;"Nessun errore bloccante; eventuali warning documentati";7.2;Collaudatore / sviluppatore;R;"scripts/build-android-ci.sh; CI Android"
+8.5;8;Revisione indipendente;Rapporto di sicurezza e minacce;Verifica specialistica separata dai test funzionali;"3.1; 3.2; 5.1; 7.1; 7.2";Collaudatore / sviluppatore;P;"Attività futura; nessuna certificazione dichiarata"
+9.1;9;Pipeline riproducibile;Workflow con versioni e checksum;"Tag coerente; setup verificato; nessuna chiave privata nel repository";"8.1; 8.2";Responsabile rilascio / referente utente;R;".github/workflows/release.yml; scripts/setup-android-ci.sh"
+9.2;9;Pubblicazione prerelease;File scaricabili e SHA256SUMS;Pubblicare solo dopo entrambe le build e raccolta degli artifact;"7.4; 7.5; 9.1";Responsabile rilascio / referente utente;R;GitHub Releases v0.4.0
+9.3;9;Documentazione e consegna;Relazione, WBS e guida utente;Ambito, formule, dati, limiti e istruzioni comprensibili e collegati;"1.3; 9.2";Responsabile rilascio / referente utente;R;"README.md; PROJECT-DOCUMENTATION.md; WBS.md; wbs.csv"
+9.4;9;Firma stabile e aggiornamenti;Procedura di firma release privata;Conservare chiave in modo sicuro e verificare aggiornamento senza reinstallazione;"7.5; 9.2";Responsabile rilascio / referente utente;P;"Non configurata; backup prima di cambiare APK"
+9.5;9;Manutenzione controllata;Registro modifiche e revisioni documentali;Aggiornare test, note e documenti per ogni cambiamento rilevante;9.3;Responsabile rilascio / referente utente;P;Processo proposto, non servizio operativo garantito
