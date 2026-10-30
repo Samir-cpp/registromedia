@@ -1,53 +1,43 @@
-# Votiva
+# Votiva 2.0
 
-Voti e medie, senza distrazioni. App personale offline per Windows e Android, sito installabile dalla schermata Home di iPhone. Nuova identità di RegistroMedia, versione **1.0.1**.
+Lo stesso registro personale, con **Mentor**, **simulatore**, **importazione screenshot guidata** e integrazione **Supabase per account online**. Account locali, identificatori delle app e backup precedenti restano compatibili.
 
-## Cosa trovi
+## Novità
 
-- Dieci materie iniziali: Italiano, Storia, Informatica, Sistemi e reti, Inglese, Motoria, Educazione civica, Telecomunicazioni, TPSIT e Matematica. Puoi aggiungerle, rinominarle o eliminarle.
-- Voti selezionabili ogni 0,25: da 0,25 fino a 10. Data di oggi automatica, tipo, peso e nota facoltativa.
-- Media ponderata per materia, media generale delle materie con voti, grafico e percentuale dei voti sufficienti.
-- Trimestre, pentamestre e anno intero. Date configurabili da Account → Date dei periodi; si ripetono ogni anno. La fine del trimestre può essere anche a gennaio.
-- Tutti i voti di una materia con un tocco sul suo nome; modifica ed eliminazione.
-- Rosso sotto il 6, verde dal 6, con indicazioni testuali; tema chiaro, scuro o automatico.
-- Account locale cifrato, accesso mantenuto fino a Esci, backup cifrati e cambio password.
+- **Mentor:** contatori, insufficienze per periodo e materia, materie da recuperare, voti massimi/minimi, distribuzioni, medie per tipo e mese, punti forti e priorità. I piani collegano i voti reali al simulatore, senza giudizi personali o dati inventati.
+- **Simulatore:** quanto serve in una o più prove, con pesi, obiettivi e voto ipotizzato; scorciatoie per confrontare piani e segnalazione degli obiettivi impossibili. Non modifica i voti reali.
+- **OCR guidato:** istruzioni su quale screenshot caricare, materia scelta prima, ritaglio, due letture locali, anteprima correggibile, revisione obbligatoria e controllo dei duplicati. Se non funziona puoi incollare testo o completare le righe a mano.
+- **Online:** integrazione per email verificata, recupero a codice, sincronizzazione e protezione dai conflitti. Richiede un progetto Supabase di tua proprietà: **non è attivo finché non viene configurato**.
 
-Argo, riconoscimento screenshot, agenda e simulatore sono stati rimossi, insieme alle rispettive dipendenze e percorsi di accesso. Non ci sono API scolastiche, tracker o pubblicità.
+Restano dieci materie iniziali modificabili, voti ogni 0,25 fino a 10, media ponderata per materia e media generale delle materie con voti, date dei periodi configurabili, temi chiaro/scuro e backup cifrati. Nessuna API o connessione Argo.
 
-## Installazione
+## Installare e usare
 
-Le nuove build sono pubblicate nella [pagina delle release](https://github.com/Samir-cpp/registromedia/releases). Controlla che la versione sia **v1.0.1**: i download 0.4 appartengono alla versione precedente.
+Scarica la versione desiderata dalla [pagina release](https://github.com/Samir-cpp/registromedia/releases). Le build 2.0 sono di collaudo, non una certificazione per l’uso commerciale nelle scuole.
 
-**Windows:** esegui `Votiva-1.0.1-x64-Setup.exe` oppure estrai tutto `Votiva-1.0.1-x64-Portable.zip` e apri `Votiva.exe`. La build non ha certificato di firma commerciale.
+**Windows:** installer `*-Setup.exe` o ZIP `*-Portable.zip`, da estrarre completamente prima di avviare `Votiva.exe`. Windows non ha firma commerciale.
 
-**Android:** installa `Votiva-1.0.1-Android-debug.apk`, Android 9 o successivo con System WebView aggiornato. L’APK usa una firma di sviluppo: se non è compatibile con la vecchia firma, esporta un backup e conserva la password **prima di disinstallare**. Non cancellare i dati dell’app senza backup.
+**Android:** `*-Android-debug.apk`, Android 9+ con WebView aggiornato. La firma di sviluppo può essere diversa da quella precedente: **esporta un backup cifrato e conserva la password prima di disinstallare o reinstallare**. Le risorse OCR aumentano le dimensioni rispetto alla 1.0.
 
-**iPhone / iPad:** apri il sito pubblicato in Safari → Condividi → Aggiungi alla schermata Home. Primo accesso online; poi l’app funziona offline, anche dopo aver chiuso Safari. APK ed EXE non si installano su iOS. Il sito deve usare HTTPS, non basta aprire `index.html` da File.
+**iPhone/iPad:** pubblica il sito HTTPS e aprilo in Safari → Condividi → Aggiungi alla schermata Home. Nel repository: Settings → Pages → Source GitHub Actions, poi avvia il workflow **Publish iPhone and web app**. Il workflow prepara anche le risorse OCR. Non c’è un’app App Store.
 
-### Pubblicare il sito gratuitamente su GitHub Pages
+### Account locale oppure online
 
-Il proprietario del repository può fare questa configurazione una sola volta:
+Il profilo locale funziona offline e conserva l’accesso fino a Esci. Password non recuperabile; dati AES-GCM e backup cifrati formato 3. Le versioni 0.3/0.4/1.0 rimangono compatibili.
 
-1. Repository → **Settings → Pages → Source: GitHub Actions**.
-2. **Actions → Publish iPhone and web app → Run workflow**, ramo `main`.
-3. Apri l’indirizzo mostrato dal job di deploy, normalmente `https://samir-cpp.github.io/registromedia/`.
-4. Ripeti il workflow quando vuoi aggiornare il sito.
+L’account online richiede connessione e progetto configurato. Email verificata, token solo in memoria, nuovo accesso alla riapertura. Dati condivisi tra i tuoi dispositivi, con controllo delle revisioni: un conflitto blocca il salvataggio e richiede aggiornamento dal cloud. Nessuna coda offline o unione automatica. Il server conserva i dati protetti da autenticazione e RLS, **non end-to-end**. Da un profilo locale puoi copiarli online con scelta esplicita; i dati locali restano intatti.
 
-L’indirizzo è utilizzabile solo dopo il deploy riuscito. Pages serve esclusivamente i file dell’app: materie, password e voti restano nel browser. Pubblicare il sito non sincronizza gli account. Il bundle statico può anche essere ospitato da qualsiasi server HTTPS.
+**[Guida completa per attivare Supabase](docs/SUPABASE-SETUP.md)**: SQL, conferma email, template a codice, SMTP, funzione di cancellazione, chiave pubblica e collaudo. Non inserire chiavi amministrative nel client. I pacchetti standard contengono `cloud-config.json` vuoto: per il tuo backend va configurato e ricostruito sito/installer/APK.
 
-## Dati e password
+## Quale screenshot serve
 
-L’account esiste sul dispositivo, non su un server. Username visibile; nome, voti, materie e impostazioni cifrati con AES-256-GCM e PBKDF2-SHA256 (600.000 iterazioni). Nessuna password salvata o inviata. **Mostra password** rende visibile solo quello che stai digitando; l’app non può recuperare la password originale. Account → Password permette di cambiarla verificando quella attuale.
+Apri l’elenco dei singoli voti di una materia. Devono comparire **data e voto**, non soltanto la media. Scegli la materia nell’app e ritaglia menu, dati personali e intestazioni, lasciando date e numeri leggibili. Usa PNG/JPG/WebP, un file fino a 10 MB per volta. Correggi l’anteprima e conferma la revisione: il riconoscimento può sbagliare. Nessuna data viene sostituita automaticamente con oggi.
 
-La chiave non esportabile salvata in IndexedDB mantiene l’accesso. Chi può usare il tuo profilo del dispositivo può aprire Votiva fino a **Esci**. Non c’è recupero password. Usa un dispositivo personale protetto dal blocco schermo.
+Le immagini restano sul dispositivo e vengono liberate alla chiusura; il cloud riceve soltanto i voti confermati. Nessuna immagine viene inviata a un servizio AI. Sono verificati tre casi sintetici di lettura reale, non ogni possibile schermata di registro.
 
-Per trasferire i voti: **Account → Esporta backup cifrato**; sull’altro dispositivo **Ripristina backup** e password del backup. Il ripristino sostituisce, non unisce. I backup precedenti al cambio password richiedono ancora la vecchia password. Safari può eliminare dati del sito: salva periodicamente un backup in File/iCloud Drive.
+## Sviluppo e controlli
 
-I backup cifrati formato 3 di RegistroMedia 0.3/0.4 restano compatibili; le materie esistenti non vengono sostituite da quelle predefinite. I vecchi dati agenda e obiettivi sono conservati solo per compatibilità dell’archivio, senza funzioni o schermate per usarli. I dati non cifrati 0.1/0.2 non sono migrati automaticamente. Identificatori Android, database, protocollo desktop e cartella Windows `RegistroMedia` restano stabili per conservare l’archivio dopo il cambio nome.
-
-## Sviluppo e verifiche
-
-Richiede Node.js 24+.
+Node.js 24+:
 
 ```sh
 npm ci
@@ -60,9 +50,11 @@ Apri `http://localhost:3000`. Per i test browser:
 ```sh
 npx playwright install --with-deps chromium
 npm run test:ui
+npm run test:major
+npm run test:cloud
 ```
 
-Se Chromium è già installato puoi impostare `CHROMIUM_PATH=/usr/bin/chromium`. Il test copre account, voti, medie, percentuali, date, cambio password, backup, sessioni, temi, offline e larghezze 320–1920 px. I test unitari coprono anche migrazione e conflitti di scrittura. I controlli automatici non garantiscono assenza di bug o compatibilità con ogni dispositivo fisico.
+Se Chromium è già presente: `CHROMIUM_PATH=/usr/bin/chromium`. I test SQL usano PostgreSQL embedded PGlite, senza collegarsi a progetti reali; il test cloud browser usa API simulate e lo dichiara. I test OCR riconoscono immagini reali generate per il test, senza simulare il motore.
 
 ```sh
 npm run desktop
@@ -72,18 +64,13 @@ npm run android:assets
 npm run dist:web
 ```
 
-Windows: build su Windows con Electron Builder. Android: JDK 21, Gradle 8.11.1, SDK 35 e build tools 35.0.0; `gradle --project-dir android assembleDebug lintDebug`. Il sito statico è in `dist/web`, senza dipendenze o dati personali. I workflow separati costruiscono Windows e Android; il workflow release verifica il tag, esegue i test e pubblica tutti gli asset con checksum solo se entrambe le build passano.
-
-Non servono Tesseract, modelli OCR, account Argo o chiavi API. Electron resta la componente principale dello spazio occupato su Windows: la rimozione dei modelli alleggerisce l’app, ma non elimina il runtime desktop.
+Android: JDK 21, Gradle 8.11.1, SDK 35, build tools 35.0.0; `gradle --project-dir android assembleDebug lintDebug`. Il frontend non richiede framework; OCR e lingua italiana sono preparati da postinstall. Non sono necessarie chiavi di un servizio AI.
 
 ## Documentazione
 
-- [Relazione tecnica e funzionale](docs/PROJECT-DOCUMENTATION.md)
-- [WBS](docs/WBS.md) e [CSV per Excel](docs/wbs.csv)
-- [Documento PDF](docs/documents/RegistroMedia-Documentazione-Completa.pdf) e [Word modificabile](docs/documents/RegistroMedia-Documentazione-Completa.docx)
+- [Funzioni, formule e limiti della 2.0](docs/MAJOR-2.0.md)
+- [Attivazione e collaudo Supabase](docs/SUPABASE-SETUP.md)
+- [Retrospettiva illustrata 0.3–1.0, con video](docs/evolution/README.md)
+- [Relazione storica 1.0](docs/PROJECT-DOCUMENTATION.md) e [WBS 1.0](docs/WBS.md)
 
-Per rigenerare PDF e Word: `python -m pip install -r docs/requirements-docs.txt`, poi `python scripts/build-project-docs.py`. Il renderer usa DejaVu Sans in `/usr/share/fonts/truetype/dejavu`; su altri sistemi adatta il percorso nel renderer.
-
-### Storia del progetto, screenshot e video
-
-La [retrospettiva multimediale](docs/evolution/README.md) racconta l’idea iniziale, i cambi di direzione, i miglioramenti e le rinunce: PDF e Word illustrati, 18 screenshot, video MP4, GIF e presentazione HTML animata. I dati sono dimostrativi e le interfacce storiche sono ricostruite dai commit indicati.
+Per la vendita scolastica servono ancora collaudo del backend reale e dei dispositivi, revisione di sicurezza e accessibilità, firme stabili e gestione del servizio/privacy con la scuola. Non sono promessi zero bug, conformità legale o licenza commerciale già definita. Il repository resta `UNLICENSED` finché il titolare non sceglie la licenza.

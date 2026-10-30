@@ -57,7 +57,7 @@ const artifacts = fs.mkdtempSync(path.join(os.tmpdir(), "votiva-ui-"));
     await page.locator("#auth-submit").click();
     await page.locator("#app-view").waitFor({ state: "visible" });
     assert.equal(await page.locator(".subject").count(), 10);
-    assert.equal(await page.locator("#open-import").count(), 0);
+    assert.equal(await page.locator("#open-import").count(), 1);
     assert.equal(await page.locator("#connection").count(), 0);
     async function grade(value, date, subject = "subject-9", weight = 1) {
       await page.locator("#add-grade").click();

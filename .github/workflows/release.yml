@@ -8,7 +8,7 @@ on:
       tag:
         description: Existing version tag to publish
         required: true
-        default: v1.0.1
+        default: v2.0.0
 permissions:
   contents: read
 concurrency:
@@ -35,6 +35,8 @@ jobs:
       - run: npm test
       - run: npx playwright install --with-deps chromium
       - run: npm run test:ui
+      - run: npm run test:major
+      - run: npm run test:cloud
       - name: Package static web app
         run: |
           npm run dist:web

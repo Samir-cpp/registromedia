@@ -113,3 +113,21 @@ test("cambio password ricifra account, revoca chiave ricordata e mantiene leggib
     schoolData,
   );
 });
+
+test("backup dei dati online: password del file separata, formato 3 ripristinabile come profilo locale", async () => {
+  const backup = await vault.portableBackup(
+    {
+      name: "Profilo cloud",
+      username: "cloud-11111111111141118111111111111111",
+      data: schoolData,
+    },
+    password,
+  );
+  assert.equal(JSON.stringify(backup).includes("MateriaRiservata"), false);
+  await assert.rejects(
+    vault.restoreBackup(backup, "Password-file-sbagliata-2026"),
+  );
+  const local = await vault.restoreBackup(backup, password);
+  assert.deepEqual(local.data, schoolData);
+  assert.equal(local.username, "cloud-11111111111141118111111111111111");
+});

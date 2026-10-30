@@ -9,7 +9,7 @@
     <meta name="referrer" content="no-referrer" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; worker-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
+      content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'none'; form-action 'none'"
     />
     <meta name="theme-color" content="#14594e" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -88,7 +88,9 @@
           Non possiamo recuperare una password dimenticata. Conserva un backup
           cifrato dei tuoi dati.
         </p>
-        <button class="text-button full" id="restore-auth" type="button">
+        <button class="outline full" id="cloud-auth" type="button">
+          Account online e sincronizzazione</button
+        ><button class="text-button full" id="restore-auth" type="button">
           Ripristina un backup
         </button>
       </div>
@@ -122,9 +124,17 @@
             <p id="greeting">Materie, voti e medie. Tutto qui.</p>
           </div>
           <div class="main-actions">
+            <button id="open-import" class="outline">Importa voti</button>
             <button id="add-grade" class="primary">＋ Aggiungi voto</button>
           </div>
         </section>
+        <nav class="feature-nav" aria-label="Strumenti">
+          <button id="open-mentor" class="feature-button">
+            <b>Mentor</b><span>Statistiche e recupero</span></button
+          ><button id="open-simulator" class="feature-button">
+            <b>Simulatore</b><span>Prova il prossimo risultato</span>
+          </button>
+        </nav>
         <div class="toolbar">
           <div class="tabs" role="group" aria-label="Periodo">
             <button data-period="first">Trimestre</button
@@ -211,7 +221,7 @@
         </section>
         <footer>
           <span id="sync-status" role="status">Salvato sul dispositivo</span
-          ><span>Votiva · Offline e personale</span>
+          ><span>Votiva · I tuoi voti, più chiari</span>
         </footer>
       </main>
     </div>
@@ -334,24 +344,32 @@
         ><button class="outline" id="restore-account">
           ↑ Ripristina backup cifrato</button
         ><button id="period-settings" class="outline">Date dei periodi</button
+        ><button id="cloud-account" class="outline">
+          Account online e sincronizzazione</button
+        ><button id="cloud-sync" class="outline" hidden>
+          Aggiorna da cloud</button
         ><button id="logout" class="outline">Esci dall’account</button>
       </div>
       <details>
         <summary>Privacy e gestione dei dati</summary>
         <p>
-          Materie, voti, nome sono cifrati sul dispositivo con AES-GCM e una
-          chiave derivata dalla tua password. Il nome utente resta visibile. Non
-          memorizziamo la password e non inviamo i dati a server. Non usiamo
-          tracker o pubblicità.
+          Account locale: dati cifrati sul dispositivo con AES-GCM, password non
+          memorizzata e chiave non esportabile per mantenere l’accesso fino a
+          Esci. Non esiste recupero della password locale.
         </p>
         <p>
-          Non possiamo recuperare una password dimenticata. I backup sono
-          cifrati: conservali e ricorda la password usata per crearli. I
-          dispositivi non si sincronizzano automaticamente. Per mantenere
-          l’accesso, una chiave non esportabile è conservata su questo
-          dispositivo. Chi usa il tuo profilo del dispositivo può aprire l’app
-          finché non premi Esci. La cifratura non protegge da un dispositivo
-          compromesso.
+          Account online: autenticazione tramite Supabase, email verificata,
+          dati sincronizzati e accesso limitato al proprietario. I dati sono
+          conservati dal gestore del servizio: non è cifratura end-to-end.
+          Password e token di sessione non vengono salvati da Votiva nel
+          browser; per questo l’accesso online va ripetuto alla riapertura. Il
+          recupero riguarda solo la password online.
+        </p>
+        <p>
+          Gli screenshot OCR sono letti sul dispositivo; vengono sincronizzati
+          soltanto i voti confermati. Nessun tracker o pubblicità. I backup sono
+          cifrati e richiedono la password usata alla creazione; il ripristino
+          sostituisce i dati e non li unisce.
         </p>
       </details>
       <details>
@@ -406,22 +424,24 @@
         <summary>Usare Votiva su iPhone</summary>
         <p>
           Apri il sito Votiva in Safari, poi Condividi → Aggiungi alla schermata
-          Home. Il primo accesso richiede una connessione; in seguito funziona
-          offline. Il sito deve essere pubblicato in HTTPS: il file APK e
-          l’installer Windows non funzionano su iPhone.
+          Home. I profili locali funzionano offline dopo il primo caricamento;
+          gli account online richiedono connessione. Il sito deve essere
+          pubblicato in HTTPS: il file APK e l’installer Windows non funzionano
+          su iPhone.
         </p>
         <p>
-          Per trasferire i voti usa un backup cifrato. Gli account sono locali e
-          non si sincronizzano.
+          Con un account online configurato i dati si sincronizzano. Per i
+          profili locali usa un backup cifrato. Gli account online richiedono
+          connessione; quelli locali restano utilizzabili offline.
         </p>
       </details>
       <details class="delete-zone">
         <summary>Elimina definitivamente il mio account</summary>
         <form id="delete-account-form">
           <p>
-            Questa operazione elimina account, sessioni, materie, voti da questo
-            dispositivo. Non elimina backup già esportati o copie su altri
-            dispositivi.
+            Account locale: elimina i dati da questo dispositivo. Account
+            online: elimina l’account e il registro dal servizio, anche per gli
+            altri dispositivi. I backup esportati restano separati.
           </p>
           <label
             >Conferma la tua password<input
@@ -503,6 +523,401 @@
         /></label>
         <p class="error form-error" role="alert"></p>
         <button type="submit" class="primary full">Salva date</button>
+      </form>
+    </dialog>
+    <dialog id="mentor-dialog" class="wide-dialog">
+      <div class="section-heading">
+        <div>
+          <span class="feature-eyebrow">MENTOR</span>
+          <h2>Capisci i tuoi risultati</h2>
+          <p id="mentor-scope" class="tiny"></p>
+        </div>
+        <button
+          class="close"
+          data-close="mentor-dialog"
+          aria-label="Chiudi Mentor"
+        >
+          ×
+        </button>
+      </div>
+      <p class="tiny">
+        Indicazioni calcolate dai voti inseriti, non giudizi sulla persona o
+        previsioni dello scrutinio.
+      </p>
+      <div id="mentor-metrics" class="metrics-grid"></div>
+      <h3>Da dove partire</h3>
+      <p class="tiny">
+        Priorità ordinate per media crescente. La sufficienza di riferimento è
+        6.
+      </p>
+      <div id="mentor-priorities" class="recovery-grid"></div>
+      <p id="mentor-extremes" class="mentor-callout"></p>
+      <div class="mentor-columns">
+        <section>
+          <h3>Come sono distribuiti i voti</h3>
+          <div id="mentor-distribution"></div>
+        </section>
+        <section>
+          <h3>Medie generali per mese</h3>
+          <p class="tiny">
+            Ogni mese considera solo le materie con voti in quel mese: i gruppi
+            possono essere diversi.
+          </p>
+          <div id="mentor-months"></div>
+        </section>
+      </div>
+      <h3>Materia per materia</h3>
+      <div class="table-scroll">
+        <table class="analytics-table">
+          <thead>
+            <tr>
+              <th>Materia</th>
+              <th>Media</th>
+              <th>Voti</th>
+              <th>Sotto 6</th>
+              <th>Variazione</th>
+            </tr>
+          </thead>
+          <tbody id="mentor-subjects"></tbody>
+        </table>
+      </div>
+      <p class="tiny">
+        La variazione confronta la prima e la seconda metà cronologica dei voti,
+        con i pesi. Servono almeno 4 voti e date distinte al confine: non è una
+        previsione.
+      </p>
+      <h3>Scritto, orale e pratico</h3>
+      <div id="mentor-types" class="metrics-grid compact"></div>
+    </dialog>
+    <dialog id="simulator-dialog" class="simulator-dialog">
+      <div class="section-heading">
+        <div>
+          <span class="feature-eyebrow">SIMULATORE</span>
+          <h2>Costruisci il prossimo passo</h2>
+          <p id="sim-scope" class="tiny"></p>
+        </div>
+        <button
+          class="close"
+          data-close="simulator-dialog"
+          aria-label="Chiudi simulatore"
+        >
+          ×
+        </button>
+      </div>
+      <label>Materia<select id="sim-subject"></select></label>
+      <div class="form-row">
+        <label
+          >Media che vuoi raggiungere<input
+            id="sim-target"
+            type="number"
+            min="0.25"
+            max="10"
+            step="0.25"
+            value="6" /></label
+        ><label
+          >Prossime verifiche<select id="sim-count">
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+            <option>6</option>
+            <option>7</option>
+            <option>8</option>
+            <option>9</option>
+            <option>10</option>
+          </select></label
+        >
+      </div>
+      <label
+        >Peso di ciascuna prossima verifica<input
+          id="sim-weight"
+          type="number"
+          min="0.01"
+          max="10"
+          step="0.01"
+          value="1"
+      /></label>
+      <div class="simulation-cards">
+        <div><span>Media attuale</span><strong id="sim-current">—</strong></div>
+        <div>
+          <span>Serve almeno, in ogni prova</span
+          ><strong id="sim-required">—</strong>
+        </div>
+      </div>
+      <p id="sim-explanation" class="mentor-callout" aria-live="polite"></p>
+      <div id="sim-scenarios" class="scenario-grid"></div>
+      <details open>
+        <summary>E se prendessi…</summary>
+        <label
+          >Voto ipotizzato in ciascuna prova<select id="sim-value"></select
+        ></label>
+        <p>La media diventerebbe <strong id="sim-projected">—</strong></p>
+      </details>
+      <p id="sim-note" class="tiny"></p>
+      <p class="tiny">
+        Gli scenari non aggiungono voti al registro. Il calcolo ipotizza prove
+        con lo stesso peso e non sostituisce i criteri del docente.
+      </p>
+      <p id="sim-error" class="error" role="alert"></p>
+    </dialog>
+    <dialog id="import-dialog" class="wide-dialog">
+      <div class="section-heading">
+        <div>
+          <span class="feature-eyebrow">IMPORTAZIONE GUIDATA</span>
+          <h2>Dallo screenshot ai voti</h2>
+        </div>
+        <button
+          class="close"
+          data-close="import-dialog"
+          aria-label="Chiudi importazione"
+        >
+          ×
+        </button>
+      </div>
+      <ol class="import-guide">
+        <li>
+          <b>Apri i voti di una materia.</b> Usa l’elenco dettagliato, non la
+          pagella con le sole medie.
+        </li>
+        <li>
+          <b>Mostra data e voto.</b> Devono essere leggibili nella stessa
+          schermata. Se scegli una sola materia qui sotto, non serve che il suo
+          nome compaia nell’immagine.
+        </li>
+        <li>
+          <b>Ritaglia il superfluo.</b> Togli nome dello studente, menu e
+          intestazioni; lascia visibili date e voti. Uno screenshot per volta,
+          non una foto sfocata.
+        </li>
+        <li>
+          <b>Controlla e conferma.</b> I risultati sono proposte: voti e date
+          mancanti vanno corretti prima del salvataggio.
+        </li>
+      </ol>
+      <p class="import-example">
+        Esempio di riga utile: <b>14/10/2026 · 7,5 · Scritto</b>. Non bastano:
+        “Media 7,5” o un numero senza la sua data.
+      </p>
+      <div class="form-row">
+        <label
+          >Materia dello screenshot<select id="import-subject"></select></label
+        ><label>Anno scolastico<select id="import-year"></select></label>
+      </div>
+      <div class="form-row">
+        <label
+          >Tipo quando non è scritto<select id="import-type">
+            <option>Scritto</option>
+            <option>Orale</option>
+            <option>Pratico</option>
+          </select></label
+        ><label class="check-label"
+          ><input id="import-multiple" type="checkbox" /> Lo screenshot contiene
+          più materie (avanzato)</label
+        >
+      </div>
+      <p class="tiny">
+        Il tipo scelto e il peso 1 sono valori iniziali, da controllare. Se
+        manca l’anno, uso l’anno scolastico indicato; se manca la data, la
+        lascio vuota.
+      </p>
+      <label class="upload-area"
+        >Scegli screenshot PNG, JPG o WebP<input
+          id="ocr-file"
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+      /></label>
+      <section id="crop-area" hidden>
+        <h3>Lascia nel riquadro solo i dati utili</h3>
+        <canvas id="crop-preview" aria-label="Anteprima del ritaglio"></canvas>
+        <div class="crop-controls">
+          <label
+            >Taglia sopra<input
+              id="crop-top"
+              type="range"
+              min="0"
+              max="80"
+              value="0" /></label
+          ><label
+            >Taglia sotto<input
+              id="crop-bottom"
+              type="range"
+              min="0"
+              max="80"
+              value="0" /></label
+          ><label
+            >Taglia a sinistra<input
+              id="crop-left"
+              type="range"
+              min="0"
+              max="80"
+              value="0" /></label
+          ><label
+            >Taglia a destra<input
+              id="crop-right"
+              type="range"
+              min="0"
+              max="80"
+              value="0"
+          /></label>
+        </div>
+      </section>
+      <button id="ocr-read" class="primary">Leggi lo screenshot</button>
+      <p id="ocr-status" class="tiny" role="status"></p>
+      <p class="tiny">
+        L’immagine resta sul dispositivo e viene liberata alla chiusura. In un
+        account online vengono sincronizzati solo i voti confermati, non
+        screenshot o testo OCR.
+      </p>
+      <details>
+        <summary>Non funziona? Incolla il testo o inserisci le righe</summary>
+        <label
+          >Testo con date e voti<textarea
+            id="ocr-text"
+            rows="4"
+            maxlength="50000"
+            placeholder="14/10/2026 7,5 Scritto"
+          ></textarea></label
+        ><button id="ocr-parse" class="outline">
+          Prepara anteprima dal testo</button
+        ><button id="import-add-row" class="text-button">
+          Aggiungi riga manualmente
+        </button>
+      </details>
+      <section id="import-review" hidden>
+        <h3>Controlla prima di importare</h3>
+        <div id="import-rows"></div>
+        <label class="check-label"
+          ><input type="checkbox" id="import-keep-duplicates" /> Mantieni anche
+          voti identici (solo se sono prove diverse)</label
+        ><label class="check-label"
+          ><input type="checkbox" id="import-reviewed" /> Ho controllato
+          materia, voto, data, tipo e peso delle righe selezionate</label
+        >
+        <p id="import-summary" class="tiny"></p>
+        <button class="primary" id="import-confirm" disabled>
+          Importa i voti controllati
+        </button>
+      </section>
+      <p id="ocr-error" class="error" role="alert"></p>
+      <datalist id="import-subject-names"></datalist>
+    </dialog>
+    <dialog id="cloud-dialog">
+      <div class="section-heading">
+        <div>
+          <span class="feature-eyebrow">VOTIVA ONLINE</span>
+          <h2>Il tuo registro su più dispositivi</h2>
+        </div>
+        <button
+          class="close"
+          data-close="cloud-dialog"
+          aria-label="Chiudi accesso online"
+        >
+          ×
+        </button>
+      </div>
+      <p id="cloud-config-status" class="tiny" role="status"></p>
+      <p class="tiny">
+        Gli account locali restano separati. L’account online richiede email
+        verificata e connessione; la sessione non viene conservata alla chiusura
+        dell’app.
+      </p>
+      <form id="cloud-form">
+        <label
+          >Operazione<select name="action" id="cloud-action">
+            <option value="login">Accedi</option>
+            <option value="register">Crea account</option>
+            <option value="verify">Conferma email con codice</option>
+            <option value="recover">Invia codice di recupero</option>
+            <option value="reset">Imposta nuova password con codice</option>
+          </select></label
+        ><label
+          >Email<input
+            name="email"
+            type="email"
+            required
+            maxlength="254"
+            autocomplete="email"
+            autocapitalize="none" /></label
+        ><label id="cloud-name-label" hidden
+          >Nome<input
+            name="name"
+            maxlength="60"
+            autocomplete="given-name" /></label
+        ><label id="cloud-password-label"
+          >Password<input
+            name="password"
+            type="password"
+            minlength="12"
+            maxlength="128"
+            autocomplete="current-password" /></label
+        ><label id="cloud-confirm-label" hidden
+          >Conferma password<input
+            name="confirm"
+            type="password"
+            minlength="12"
+            maxlength="128"
+            autocomplete="new-password" /></label
+        ><label id="cloud-code-label" hidden
+          >Codice ricevuto via email<input
+            name="code"
+            inputmode="numeric"
+            pattern="[0-9]{6,10}"
+            autocomplete="one-time-code" /></label
+        ><label id="cloud-migrate-label" class="check-label" hidden
+          ><input name="migrate" type="checkbox" /> Dopo l’accesso, copia i dati
+          del profilo locale nell’account online</label
+        >
+        <p class="tiny">
+          Il gestore del servizio conserva i dati online protetti da
+          autorizzazioni per utente. Non è cifratura end-to-end. Usa una
+          password unica di almeno 12 caratteri.
+        </p>
+        <p id="cloud-error" class="error" role="alert"></p>
+        <p id="cloud-success" class="tiny" role="status"></p>
+        <button id="cloud-submit" type="submit" class="primary full">
+          Continua
+        </button>
+      </form>
+    </dialog>
+    <dialog id="cloud-backup-dialog">
+      <form id="cloud-backup-form">
+        <div class="section-heading">
+          <h2>Proteggi il backup</h2>
+          <button
+            type="button"
+            class="close"
+            data-close="cloud-backup-dialog"
+            aria-label="Chiudi"
+          >
+            ×
+          </button>
+        </div>
+        <p class="tiny">
+          Scegli una password per questo file. Non sarà inviata al server e non
+          sarà conservata. Può essere diversa dalla password online.
+        </p>
+        <label
+          >Password del backup<input
+            name="password"
+            type="password"
+            minlength="12"
+            maxlength="128"
+            required
+            autocomplete="new-password" /></label
+        ><label
+          >Conferma<input
+            name="confirm"
+            type="password"
+            minlength="12"
+            maxlength="128"
+            required
+            autocomplete="new-password"
+        /></label>
+        <p class="form-error error" role="alert"></p>
+        <button type="submit" class="primary full">
+          Esporta backup cifrato
+        </button>
       </form>
     </dialog>
     <script type="module" src="app.mjs"></script>

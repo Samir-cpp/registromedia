@@ -376,3 +376,22 @@ export async function changePassword(session, currentPassword, newPassword) {
   await logout();
   return session;
 }
+
+// Portable backup for authenticated online data; the chosen password is only used locally.
+export async function portableBackup({ name, username, data }, password) {
+  passwordCheck(password);
+  username = usernameOf(username);
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const session = {
+    name,
+    username,
+    data: validateData(data),
+    salt: bytes64(salt),
+    key: await keyFor(password, salt),
+  };
+  return {
+    format: "registromedia-encrypted",
+    version: VERSION,
+    account: await encrypt(session, session.data, 0),
+  };
+}

@@ -5,6 +5,13 @@ const allowed = new Set([
   "index.html",
   "style.css",
   "app.mjs",
+  "analytics.mjs",
+  "learning-ui.mjs",
+  "ocr.mjs",
+  "import-model.mjs",
+  "cloud.mjs",
+  "cloud-config.json",
+
   "model.mjs",
   "vault.mjs",
   "manifest.json",
@@ -30,7 +37,7 @@ const mime = {
 const server = http.createServer(async (req, res) => {
   res.setHeader(
     "Content-Security-Policy",
-    "default-src 'self'; script-src 'self'; worker-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+    "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
   );
   res.setHeader("Referrer-Policy", "no-referrer");
   res.setHeader("X-Content-Type-Options", "nosniff");
@@ -47,7 +54,10 @@ const server = http.createServer(async (req, res) => {
     }
     const url = new URL(req.url, "http://localhost"),
       file = url.pathname === "/" ? "index.html" : url.pathname.slice(1);
-    if (!allowed.has(file)) {
+    if (
+      !allowed.has(file) &&
+      !/^vendor\/ocr\/[a-zA-Z0-9._-]+\.(js|wasm|gz|txt)$/.test(file)
+    ) {
       res.writeHead(404);
       return res.end("Pagina non trovata");
     }

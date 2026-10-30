@@ -1,3 +1,5 @@
+> Archivio della versione 1.0.1. Per l’aggiornamento corrente consulta [Votiva 2.0](MAJOR-2.0.md) e la [guida online](SUPABASE-SETUP.md).
+
 # Votiva — Documentazione del progetto
 
 Documento 2.0 · 30 ottobre 2026 · software 1.0.1. Sostituisce la relazione della versione 0.4.0. Il documento descrive lo stato implementato e distingue i controlli automatici dalle verifiche ancora necessarie.

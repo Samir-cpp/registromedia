@@ -33,6 +33,13 @@ else {
   const files = new Set([
     "index.html",
     "app.mjs",
+    "analytics.mjs",
+    "learning-ui.mjs",
+    "ocr.mjs",
+    "import-model.mjs",
+    "cloud.mjs",
+    "cloud-config.json",
+
     "model.mjs",
     "vault.mjs",
     "style.css",
@@ -80,6 +87,10 @@ else {
             throw Error(
               "Interfaccia non inizializzata: " + JSON.stringify(result),
             );
+          const ocrReady = await window.webContents.executeJavaScript(
+            `(async()=>{const {recognizeScreenshot}=await import('./ocr.mjs');const c=document.createElement('canvas');c.width=1200;c.height=300;const x=c.getContext('2d');x.fillStyle='white';x.fillRect(0,0,c.width,c.height);x.fillStyle='black';x.font='38px Arial';x.fillText('14/10/2026 7,5 Scritto',40,160);const b=await new Promise(r=>c.toBlob(r,'image/png'));const result=await recognizeScreenshot(new File([b],'desktop.png',{type:'image/png'}),{parseOptions:{subject:'Matematica',year:2026}});return result.rows.some(r=>r.value===7.5&&r.date==='2026-10-14');})()`,
+          );
+          if (!ocrReady) throw Error("OCR desktop non riuscito");
           console.log("DESKTOP_SMOKE_OK", JSON.stringify(result));
           app.exit(0);
         } catch (error) {
@@ -107,15 +118,33 @@ else {
     }
   }
   app.whenReady().then(async () => {
-    // The desktop renderer works entirely offline.
+    // Only the configured Supabase project can receive remote requests.
+    const cloudConfig = require("../cloud-config.json");
+    const cloudOrigin = /^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(
+      cloudConfig.url,
+    )
+      ? cloudConfig.url
+      : "";
     session.defaultSession.webRequest.onBeforeRequest(
       { urls: ["http://*/*", "https://*/*"] },
-      (_details, callback) => callback({ cancel: true }),
+      (details, callback) => {
+        const u = new URL(details.url);
+        callback({
+          cancel:
+            !cloudOrigin ||
+            u.origin !== cloudOrigin ||
+            !/^\/(auth|rest|functions)\/v1(?:\/|$)/.test(u.pathname),
+        });
+      },
     );
     protocol.handle("registromedia", (request) => {
       const url = new URL(request.url),
         file = url.pathname.slice(1);
-      if (url.host !== "app" || !files.has(file))
+      if (
+        url.host !== "app" ||
+        (!files.has(file) &&
+          !/^vendor\/ocr\/[a-zA-Z0-9._-]+\.(js|wasm|gz|txt)$/.test(file))
+      )
         return new Response("Not found", { status: 404 });
       return net.fetch(pathToFileURL(path.join(root, file)).href);
     });

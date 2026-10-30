@@ -1,3 +1,5 @@
+> Archivio della versione 1.0.1. Per l’aggiornamento corrente consulta [Votiva 2.0](MAJOR-2.0.md) e la [guida online](SUPABASE-SETUP.md).
+
 # Votiva — Work Breakdown Structure
 
 Documento 2.0 · 30 ottobre 2026 · software 1.0.1. Sostituisce la WBS 0.4; le funzionalità ritirate non sono più deliverable del prodotto.

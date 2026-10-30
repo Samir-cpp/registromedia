@@ -7,6 +7,13 @@ for (const name of [
   "index.html",
   "style.css",
   "app.mjs",
+  "analytics.mjs",
+  "learning-ui.mjs",
+  "ocr.mjs",
+  "import-model.mjs",
+  "cloud.mjs",
+  "cloud-config.json",
+
   "model.mjs",
   "vault.mjs",
   "manifest.json",
@@ -18,3 +25,9 @@ for (const name of [
 ])
   fs.copyFileSync(path.join(__dirname, "..", name), path.join(dest, name));
 console.log("Risorse offline Android aggiornate");
+
+fs.cpSync(
+  path.join(__dirname, "../vendor/ocr"),
+  path.join(dest, "vendor/ocr"),
+  { recursive: true },
+);

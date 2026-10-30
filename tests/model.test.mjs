@@ -96,3 +96,12 @@ test("trimestre fino a gennaio e pentamestre da febbraio", () => {
   assert.equal(academicPeriod("2026-09-10", s), "first");
   assert.throws(() => validateSettings({ ...s, split: "06-11" }));
 });
+
+test("errori floating point non trasformano una media esatta di 6 in insufficienza", () => {
+  const list = [
+    grade("1", 2, "a", "2026-12-31", 0.1),
+    grade("2", 10, "a", "2026-12-31", 0.1),
+  ];
+  assert.equal(weightedAverage(list), 6);
+  assert.equal(generalAverage(list, subjects), 6);
+});

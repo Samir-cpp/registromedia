@@ -23,10 +23,13 @@ export function periodForDate(date) {
   const m = Number(date.slice(5, 7));
   return m >= 9 ? "first" : m <= 6 ? "second" : "summer";
 }
+const stableMean = (value) => Math.round(value * 1e12) / 1e12;
 export function weightedAverage(grades) {
   return grades.length
-    ? grades.reduce((s, g) => s + g.value * g.weight, 0) /
-        grades.reduce((s, g) => s + g.weight, 0)
+    ? stableMean(
+        grades.reduce((s, g) => s + g.value * g.weight, 0) /
+          grades.reduce((s, g) => s + g.weight, 0),
+      )
     : null;
 }
 export function generalAverage(grades, subjects) {
@@ -34,7 +37,7 @@ export function generalAverage(grades, subjects) {
     .map((s) => weightedAverage(grades.filter((g) => g.subjectId === s.id)))
     .filter((v) => v !== null);
   return values.length
-    ? values.reduce((a, b) => a + b, 0) / values.length
+    ? stableMean(values.reduce((a, b) => a + b, 0) / values.length)
     : null;
 }
 const text = (s, max = 80) =>

@@ -4,6 +4,13 @@ const files = [
   "index.html",
   "style.css",
   "app.mjs",
+  "analytics.mjs",
+  "learning-ui.mjs",
+  "ocr.mjs",
+  "import-model.mjs",
+  "cloud.mjs",
+  "cloud-config.json",
+
   "model.mjs",
   "vault.mjs",
   "theme.js",
@@ -20,3 +27,9 @@ fs.mkdirSync(dest, { recursive: true });
 for (const file of files)
   fs.copyFileSync(path.join(__dirname, "..", file), path.join(dest, file));
 console.log("Sito statico pronto in dist/web");
+
+fs.cpSync(
+  path.join(__dirname, "../vendor/ocr"),
+  path.join(dest, "vendor/ocr"),
+  { recursive: true },
+);

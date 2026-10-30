@@ -1,19 +1,14 @@
-# Votiva 1.0.1
+# Votiva 2.0 — Mentor e strumenti di recupero
 
-Nuovo nome e logo, registro più essenziale, layout per telefono, tablet e desktop. Rimossi collegamenti Argo, importazione screenshot/OCR, agenda e simulatore; rimossi modelli e dipendenze OCR dal pacchetto.
+Aggiornamento della stessa app, con profili locali e backup formato 3 conservati.
 
-- Dieci materie già pronte nei nuovi account, modificabili.
-- Selettore voti da 0,25 a 10 con incrementi di 0,25.
-- Media per materia e generale, grafico e percentuale dei voti sufficienti.
-- Trimestre e pentamestre con date personalizzabili; filtro per anno e materia.
-- Temi chiaro/scuro/automatico; indicatori rosso/verde e testuali.
-- Password mostrabile durante l’inserimento e cambio password verificando quella attuale. Nessuna password memorizzata.
-- Account e backup locali cifrati, compatibilità con i backup formato 3 precedenti.
+- Mentor: statistiche per periodo, insufficienze, medie, priorità, distribuzioni, voti alti/bassi, mesi e tipo di prova. Le indicazioni non sostituiscono il docente.
+- Simulatore: obiettivi, pesi, più verifiche, scenari a quarti e risultati impossibili segnalati.
+- OCR locale guidato: scelta materia, esempio preciso dello screenshot richiesto, ritaglio, due passaggi e controllo delle letture discordanti. Anteprima e revisione obbligatorie, duplicati gestiti. Nessuna immagine inviata al cloud.
+- Integrazione Supabase: account con email verificata, recupero, sincronizzazione, revisioni e cancellazione. **Il servizio online non è attivo nei download standard**: serve il tuo progetto e la configurazione descritta in `docs/SUPABASE-SETUP.md`, poi ricostruire i pacchetti.
 
-**Windows:** `*-Setup.exe` oppure estrai completamente `*-Portable.zip` e apri `Votiva.exe`. Installer senza firma commerciale.
+Account online: rete necessaria, token solo in memoria, nuovo login alla riapertura. Account locale: resta offline e mantiene l’accesso fino a Esci. Dati online protetti da autenticazione e RLS, non cifrati end-to-end. Il cambio password del servizio non cambia quella dei backup.
 
-**Android:** `*-Android-debug.apk`, Android 9+. Firma di sviluppo: prima di reinstallare o disinstallare esporta il backup cifrato e conserva la password. La firma può differire da quella dell’APK precedente.
+Windows: installer o ZIP estratto. Android: APK debug; **prima di disinstallare o cambiare APK esporta il backup e conserva la password**, perché la firma di sviluppo può differire. iPhone: sito HTTPS in Safari, aggiunto alla schermata Home; occorre pubblicare il sito.
 
-**iPhone:** usa il sito HTTPS in Safari e scegli Condividi → Aggiungi alla schermata Home. Il workflow Pages nel repository prepara il sito; è necessario attivare Pages e completare il deploy. Non è un’app App Store. Nessuna sincronizzazione automatica: trasferisci i dati tramite backup.
-
-La versione è verificata con test automatici, senza promessa di zero bug. Restano da verificare i dispositivi fisici e la firma di produzione. I vecchi backup richiedono la password usata alla loro creazione, anche dopo averla cambiata nell’app.
+Release di collaudo: controlli automatici, OCR reale su tre immagini sintetiche, test SQL PostgreSQL e browser con API cloud simulate. Restano il collaudo Supabase ospitato, i dispositivi reali, screenshot scolastici realistici e revisione indipendente prima della vendita. I modelli OCR aumentano lo spazio rispetto alla 1.0. Windows non ha firma commerciale.

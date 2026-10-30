@@ -1,3 +1,12 @@
+import * as cloud from "./cloud.mjs";
+// Email templates use one-time codes. Do not retain an accidental token fragment.
+if (
+  /(?:^#|&)(?:access_token|refresh_token|error_description)=/.test(
+    location.hash,
+  )
+)
+  history.replaceState(null, "", location.pathname + location.search);
+import { installLearning } from "./learning-ui.mjs";
 import {
   today,
   schoolYear,
@@ -44,6 +53,8 @@ function notify(text) {
   timer = setTimeout(() => ($("message").hidden = true), 7000);
 }
 function showAuth() {
+  cloud.forget();
+  learning?.clear();
   document.querySelectorAll("dialog[open]").forEach((d) => d.close());
   session = null;
   data = { subjects: [], grades: [], tasks: [] };
@@ -75,7 +86,9 @@ function showAuth() {
 }
 
 async function openSession(value, remember = true) {
-  if (remember) await vault.rememberSession(value);
+  if (!value.cloud) cloud.forget();
+  if (value.cloud) await vault.logout();
+  else if (remember) await vault.rememberSession(value);
   session = value;
   data = value.data;
   const current = academicPeriod(today(), data.settings);
@@ -182,7 +195,9 @@ async function mutate(change) {
   try {
     const next = structuredClone(data);
     change(next);
-    data = await vault.save(session, next);
+    data = await (session.cloud
+      ? cloud.save(session, next)
+      : vault.save(session, next));
     render();
   } catch (error) {
     $("sync-status").textContent = "Modifica non salvata";
@@ -205,8 +220,11 @@ function render() {
   $("account-name").textContent = session.name;
   $("avatar").textContent = session.name.slice(0, 1).toUpperCase();
   $("account-details").textContent =
-    `${session.name} · @${session.username} · Accesso mantenuto su questo dispositivo`;
-  $("sync-status").textContent = "Salvato sul dispositivo";
+    `${session.name} · ${session.username} · ${session.cloud ? "Account online · sessione solo in memoria" : "Account locale · accesso mantenuto"}`;
+  $("sync-status").textContent = session.cloud
+    ? "Salvato online"
+    : "Salvato sul dispositivo";
+  $("cloud-sync").hidden = !session.cloud;
   const years = [
     ...new Set([schoolYear(), ...data.grades.map((g) => schoolYear(g.date))]),
   ].sort((a, b) => b - a);
@@ -294,6 +312,7 @@ function render() {
   populateSelect($("history-subject"), true);
   renderHistory();
   renderChart(stats, list);
+  learning?.refresh();
 }
 
 function renderHistory() {
@@ -512,6 +531,12 @@ document
 $("account-button").onclick = () => $("account-dialog").showModal();
 $("logout").onclick = signOut;
 $("export").onclick = async () => {
+  if (session?.cloud) {
+    $("cloud-backup-form").reset();
+    $("cloud-backup-form").querySelector(".form-error").textContent = "";
+    $("cloud-backup-dialog").showModal();
+    return;
+  }
   try {
     const backup = await vault.exportBackup(session),
       content = JSON.stringify(backup);
@@ -581,15 +606,23 @@ $("restore-form").onsubmit = (e) => {
 };
 $("delete-account-form").onsubmit = (e) => {
   e.preventDefault();
-  if (!confirm("Eliminare definitivamente l’account da questo dispositivo?"))
+  if (
+    !confirm(
+      session?.cloud
+        ? "Eliminare definitivamente l’account online e i dati su tutti i dispositivi? I backup esportati restano separati."
+        : "Eliminare definitivamente l’account da questo dispositivo?",
+    )
+  )
     return;
   submit(
     e.target,
     async () => {
-      await vault.deleteAccount(session, e.target.elements.password.value);
+      await (session.cloud
+        ? cloud.deleteAccount(session, e.target.elements.password.value)
+        : vault.deleteAccount(session, e.target.elements.password.value));
       channel?.postMessage("logout");
       showAuth();
-      notify("Account eliminato da questo dispositivo.");
+      notify("Account eliminato. I backup esportati non vengono cancellati.");
     },
     "account-dialog",
   );
@@ -604,7 +637,11 @@ async function signOut() {
     return;
   }
   try {
-    await vault.logout();
+    if (session?.cloud) {
+      try {
+        await cloud.logout();
+      } catch {}
+    } else await vault.logout();
     channel?.postMessage("logout");
     showAuth();
   } catch (e) {
@@ -650,6 +687,26 @@ function applyTheme() {
 themeSelect.onchange = applyTheme;
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
   if (themeSelect.value === "system") applyTheme();
+});
+const learning = installLearning({
+  getData: () => data,
+  getGrades: chosenGrades,
+  getScope: () =>
+    `${period === "first" ? "Trimestre" : period === "second" ? "Pentamestre" : "Anno intero"} · ${year}/${year + 1}`,
+  notify,
+  onImport: async (next, importedRows) => {
+    await mutate((d) => {
+      d.subjects = next.subjects;
+      d.grades = next.grades;
+    });
+    period = "all";
+    const latest = importedRows
+      .map((g) => g.date)
+      .sort()
+      .at(-1);
+    if (latest) year = schoolYear(latest);
+    render();
+  },
 });
 (async () => {
   try {
@@ -733,12 +790,18 @@ $("password-form").onsubmit = (e) => {
         const b = Object.fromEntries(new FormData(e.target));
         if (b.newPassword !== b.confirm)
           throw Error("Le password non coincidono");
-        await vault.changePassword(session, b.currentPassword, b.newPassword);
-        await vault.rememberSession(session);
+        if (session.cloud)
+          await cloud.changePassword(session, b.currentPassword, b.newPassword);
+        else {
+          await vault.changePassword(session, b.currentPassword, b.newPassword);
+          await vault.rememberSession(session);
+        }
         channel?.postMessage("logout");
         e.target.reset();
         notify(
-          "Password aggiornata. I backup precedenti usano ancora la vecchia password.",
+          session.cloud
+            ? "Password online aggiornata. I backup conservano la password scelta durante l’esportazione."
+            : "Password aggiornata. I backup precedenti usano ancora la vecchia password.",
         );
       } finally {
         busy = false;
@@ -756,3 +819,172 @@ document.querySelectorAll("[data-password]").forEach(
       button.setAttribute("aria-pressed", String(input.type === "text"));
     }),
 );
+
+let migrationSnapshot = null;
+async function openCloud() {
+  migrationSnapshot = session && !session.cloud ? structuredClone(data) : null;
+  $("cloud-form").reset();
+  $("cloud-error").textContent = "";
+  $("cloud-success").textContent = "";
+  $("cloud-migrate-label").hidden = !migrationSnapshot;
+  $("cloud-account").blur();
+  $("account-dialog").close();
+  $("cloud-dialog").showModal();
+  cloudAction();
+  try {
+    const c = await cloud.configuration();
+    $("cloud-config-status").textContent = c.enabled
+      ? "Servizio online configurato."
+      : "Servizio online non attivo: il gestore deve configurare Supabase. I profili locali continuano a funzionare.";
+    $("cloud-submit").disabled = !c.enabled;
+  } catch (e) {
+    $("cloud-config-status").textContent = e.message;
+    $("cloud-submit").disabled = true;
+  }
+}
+function cloudAction() {
+  const a = $("cloud-action").value,
+    f = $("cloud-form");
+  for (const [label, field, on] of [
+    ["cloud-name-label", "name", a === "register"],
+    [
+      "cloud-password-label",
+      "password",
+      ["login", "register", "reset"].includes(a),
+    ],
+    ["cloud-confirm-label", "confirm", ["register", "reset"].includes(a)],
+    ["cloud-code-label", "code", ["verify", "reset"].includes(a)],
+  ]) {
+    $(label).hidden = !on;
+    f.elements[field].required = on;
+  }
+  f.elements.password.autocomplete =
+    a === "login" ? "current-password" : "new-password";
+  $("cloud-migrate-label").hidden = !migrationSnapshot || a !== "login";
+}
+$("cloud-action").onchange = cloudAction;
+$("cloud-auth").onclick = $("cloud-account").onclick = openCloud;
+$("cloud-dialog").addEventListener("close", () => {
+  $("cloud-form").reset();
+  migrationSnapshot = null;
+});
+$("cloud-form").onsubmit = async (e) => {
+  e.preventDefault();
+  const b = Object.fromEntries(new FormData(e.target));
+  $("cloud-error").textContent = "";
+  $("cloud-success").textContent = "";
+  $("cloud-submit").disabled = true;
+  try {
+    if (["register", "reset"].includes(b.action) && b.password !== b.confirm)
+      throw Error("Le password non coincidono");
+    if (b.action === "register") {
+      await cloud.register(b);
+      $("cloud-success").textContent =
+        "Se la registrazione è disponibile riceverai un codice. Controlla l’email e scegli Conferma email.";
+      e.target.elements.password.value = e.target.elements.confirm.value = "";
+    } else if (b.action === "verify") {
+      await cloud.verifyEmail(b.email, b.code);
+      $("cloud-success").textContent = "Email confermata. Ora puoi accedere.";
+    } else if (b.action === "recover") {
+      await cloud.resetEmail(b.email);
+      $("cloud-success").textContent =
+        "Se l’account esiste riceverai il codice. Scegli Imposta nuova password.";
+    } else if (b.action === "reset") {
+      await cloud.resetPassword(b.email, b.code, b.password);
+      e.target.elements.password.value = e.target.elements.confirm.value = "";
+      $("cloud-success").textContent =
+        "Password aggiornata. Accedi con la nuova password.";
+    } else {
+      const online = await cloud.login(b.email, b.password);
+      if (b.migrate === "on" && migrationSnapshot) {
+        if (
+          online.data.grades.length &&
+          !confirm(
+            `L’account online contiene ${online.data.grades.length} voti. Sostituirli con i ${migrationSnapshot.grades.length} voti del profilo locale? Il profilo locale resta intatto.`,
+          )
+        )
+          throw Error("Copia annullata: nessun dato online sostituito");
+        await cloud.save(online, migrationSnapshot);
+      }
+      await openSession(online, false);
+      notify(
+        "Account online aperto. Le modifiche salvate saranno disponibili sugli altri dispositivi.",
+      );
+    }
+  } catch (err) {
+    $("cloud-error").textContent = err.message;
+  } finally {
+    $("cloud-submit").disabled = false;
+  }
+};
+$("cloud-sync").onclick = async () => {
+  if (busy || !session?.cloud) return;
+  busy = true;
+  try {
+    data = await cloud.sync(session);
+    render();
+    notify("Dati aggiornati dal cloud");
+  } catch (e) {
+    notify(e.message);
+  } finally {
+    busy = false;
+  }
+};
+setInterval(async () => {
+  if (
+    !session?.cloud ||
+    busy ||
+    document.hidden ||
+    document.querySelector("dialog[open]")
+  )
+    return;
+  busy = true;
+  try {
+    const previousRevision = session.revision;
+    data = await cloud.sync(session);
+    if (session.revision !== previousRevision) render();
+    else $("sync-status").textContent = "Salvato online";
+  } catch {
+    $("sync-status").textContent =
+      "Cloud non raggiungibile · controlla la connessione";
+  } finally {
+    busy = false;
+  }
+}, 45000);
+async function downloadBackup(backup) {
+  const content = JSON.stringify(backup);
+  if (window.NativeBackup?.postMessage) {
+    window.NativeBackup.postMessage(content);
+    return;
+  }
+  const url = URL.createObjectURL(
+    new Blob([content], { type: "application/json" }),
+  );
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `votiva-${today()}-cifrato.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+$("cloud-backup-form").onsubmit = (e) => {
+  e.preventDefault();
+  submit(
+    e.target,
+    async () => {
+      const b = Object.fromEntries(new FormData(e.target));
+      if (b.password !== b.confirm) throw Error("Le password non coincidono");
+      if (!session?.cloud) throw Error("Accedi all’account online");
+      const backup = await vault.portableBackup(
+        {
+          name: session.name,
+          username: "cloud-" + session.userId.replaceAll("-", ""),
+          data,
+        },
+        b.password,
+      );
+      await downloadBackup(backup);
+      e.target.reset();
+    },
+    "cloud-backup-dialog",
+  );
+};

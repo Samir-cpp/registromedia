@@ -19,6 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
+      - run: npm ci
       - run: npm run dist:web
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
