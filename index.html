@@ -1,16 +1,510 @@
 <!doctype html>
-<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"><meta name="theme-color" content="#f6f7f9"><title>RegistroMedia</title><script src="theme.js"></script><link rel="stylesheet" href="style.css"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg"></head><body>
-<section id="auth-view" class="auth-view" hidden><div class="auth-card"><a class="brand" href="#">◈ RegistroMedia</a><h1 id="auth-heading">Il tuo registro, solo tuo.</h1><p id="auth-description">Accedi alle tue materie e ai tuoi voti.</p><div class="tabs auth-tabs"><button id="login-tab" class="selected" type="button">Accedi</button><button id="register-tab" type="button">Crea account</button></div><form id="auth-form"><label id="name-label" hidden>Nome (facoltativo)<input name="name" maxlength="60" autocomplete="given-name" placeholder="Come ti chiami?"></label><label>Nome utente<input name="username" required minlength="3" maxlength="40" pattern="[A-Za-z0-9._-]+" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Il tuo nome utente"></label><label>Password<input name="password" required type="password" minlength="12" maxlength="128" autocomplete="current-password" placeholder="Almeno 12 caratteri"></label><label id="confirm-label" hidden>Conferma password<input name="confirm" type="password" minlength="12" maxlength="128" autocomplete="new-password"></label><p id="auth-error" class="error" role="alert"></p><button class="primary full" type="submit" id="auth-submit">Accedi</button></form><p class="tiny">Resterai collegato su questo dispositivo finché non premi <b>Esci</b>. Usalo solo su un dispositivo personale.</p><p id="recovery-note" class="tiny" hidden>Non possiamo recuperare una password dimenticata. Conserva un backup cifrato dei tuoi dati.</p><button class="text-button full" id="restore-auth" type="button">Ripristina un backup</button></div></section>
-<div id="app-view" hidden><header class="topbar"><a class="brand" href="#">◈ RegistroMedia</a><div class="top-actions"><label class="theme-label"><span class="sr-only">Tema</span><select id="theme-select" aria-label="Tema"><option value="system">Tema automatico</option><option value="light">Chiaro</option><option value="dark">Scuro</option></select></label><button id="account-button" class="account-button" aria-label="Account e dati"><span id="avatar">S</span><span id="account-name">Account</span></button></div></header><main>
-<section class="page-heading"><div><h1>Il tuo registro</h1><p id="greeting">Materie, voti e medie. Tutto qui.</p></div><div class="main-actions"><button id="open-import" class="outline">Importa voti e materie</button><button id="add-grade" class="primary">＋ Aggiungi voto</button></div></section>
-<div class="toolbar"><div class="tabs" role="group" aria-label="Periodo"><button data-period="first">1° periodo<small>Set – Dic</small></button><button data-period="second">2° periodo<small>Gen – Giu</small></button><button data-period="all">Anno intero</button></div><label class="year-label"><span class="sr-only">Anno scolastico</span><select id="year-select" aria-label="Anno scolastico"></select></label></div>
-<section class="summary" aria-label="Riepilogo"><div><span class="label">Media generale</span><div class="average-line"><strong id="average">—</strong><span id="average-status" class="status-tag">Nessun voto</span></div><p>Media delle materie con voti</p></div><div class="summary-details"><span><b id="count">0</b> voti</span><span><b id="recover">0</b> materie sotto il 6</span></div></section>
-<section class="register-panel"><div class="register-nav"><div class="view-tabs" role="tablist" aria-label="Registro"><button id="subjects-tab" role="tab" aria-selected="true" aria-controls="subjects-view" class="active">Materie <span id="subject-count">0</span></button><button id="grades-tab" role="tab" aria-selected="false" aria-controls="grades-view">Voti</button></div><button class="text-button" id="add-subject">＋ Aggiungi materia</button></div><div id="subjects-view" role="tabpanel" aria-labelledby="subjects-tab"><div id="subject-list"></div></div><div id="grades-view" role="tabpanel" aria-labelledby="grades-tab" hidden><label class="history-filter">Materia<select id="history-subject" aria-label="Filtra voti per materia"></select></label><div id="grade-list"></div></div></section><footer><span id="sync-status" role="status">Salvato sul dispositivo</span><span>Solo sul tuo dispositivo · Nessuna sincronizzazione Argo</span></footer></main></div>
-<div id="loading-view" class="loading-view">Apro il tuo registro…</div><p id="message" class="toast" role="status" hidden></p>
-<dialog id="tools-dialog"><div class="section-heading"><h2>Altri strumenti</h2><button class="close" data-close="tools-dialog" aria-label="Chiudi">×</button></div><section><div class="section-heading"><h3>Agenda</h3><button class="outline" id="add-task">＋ Impegno</button></div><div id="task-list"></div><button id="show-completed" class="text-button">Mostra completati</button></section><details><summary>Che voto mi serve?</summary><label>Materia<select id="sim-subject"></select></label><div class="form-row"><label>Media desiderata<input id="sim-target" type="number" min="1" max="10" step="0.1" value="7"></label><label>Peso prossimo voto<input id="sim-weight" type="number" min="0.01" max="10" step="0.01" value="1"></label></div><p id="sim-result" class="simulation-result" aria-live="polite"></p></details><details><summary>Confronta i due periodi</summary><p>Set – Dic: <b id="first-average">—</b></p><progress id="first-progress" max="10" value="0" aria-label="Media primo periodo"></progress><p>Gen – Giu: <b id="second-average">—</b></p><progress id="second-progress" max="10" value="0" aria-label="Media secondo periodo"></progress><p id="comparison-text" class="tiny"></p></details></dialog>
-<dialog id="import-dialog"><div class="section-heading"><div><h2>Importa voti e materie</h2><p class="tiny">Prima controlli, poi salvi. Nessun dato viene aggiunto da solo.</p></div><button class="close" id="close-import" aria-label="Chiudi importazione">×</button></div><div id="import-start"><label class="upload-area" for="screenshot-files"><b>Carica i tuoi screenshot</b><span>PNG, JPG o WebP · fino a 5 immagini</span><span class="outline">Scegli immagini</span></label><input id="screenshot-files" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden><p class="tiny">Le immagini vengono lette qui, sul dispositivo. Non vengono caricate online né conservate nell’account.</p><div class="form-row"><label>Anno dei voti senza anno<select id="import-year"></select></label><label>Cosa contiene?<select id="import-mode"><option value="grades">Voti e materie</option><option value="subjects">Solo nomi delle materie</option></select></label></div><p id="ocr-status" role="status" class="tiny"></p><details id="import-text-details"><summary>Oppure incolla il testo</summary><label>Testo da riconoscere<textarea id="import-text" rows="5" maxlength="50000" placeholder="Matematica 14/10/2026 7,5 Scritto&#10;Italiano 18/10/2026 8 Orale"></textarea></label><button class="outline" id="parse-import">Prepara anteprima</button></details></div><section id="import-review" hidden><div class="review-heading"><h3>Controlla i dati riconosciuti</h3><p class="tiny">Correggi materia, voto e data. Le date mancanti non vengono sostituite con oggi. I voti già presenti saranno saltati.</p></div><div id="import-rows"></div><button class="text-button" id="import-add-row">＋ Aggiungi una riga</button><div class="import-footer"><span id="import-summary" class="tiny"></span><button class="primary" id="confirm-import">Importa dati selezionati</button></div><button class="text-button" id="import-back">Ricomincia</button></section><p id="import-error" class="error" role="alert"></p></dialog>
-<dialog id="subject-dialog"><form id="subject-form"><div class="section-heading"><h2 id="subject-dialog-title">Una nuova materia</h2><button type="button" class="close" data-close="subject-dialog" aria-label="Chiudi">×</button></div><label>Nome della materia<input name="name" required maxlength="80" placeholder="es. Matematica"></label><details><summary>Obiettivo facoltativo</summary><label>Il tuo obiettivo<input name="target" type="number" min="1" max="10" step="0.1" value="7" required></label><p class="tiny">L’obiettivo ti aiuta a capire su cosa concentrarti.</p></details><p class="error form-error" role="alert"></p><div class="dialog-actions"><button type="button" class="danger text-button" id="delete-subject" hidden>Elimina materia</button><button class="primary" type="submit">Salva materia</button></div></form></dialog>
-<dialog id="grade-dialog"><form id="grade-form"><div class="section-heading"><h2 id="grade-dialog-title">Un nuovo risultato</h2><button type="button" class="close" data-close="grade-dialog" aria-label="Chiudi">×</button></div><label>Materia<select name="subjectId" required></select></label><label>Che voto hai preso?<input class="grade-input" name="value" type="number" min="1" max="10" step="0.01" required placeholder="7,5" inputmode="decimal"></label><div class="form-row"><label>Tipo<select name="type"><option>Orale</option><option>Scritto</option><option>Pratico</option></select></label></div><p class="auto-date" id="grade-auto-date"></p><details><summary>Data, peso o nota</summary><label>Peso<input name="weight" type="number" min="0.01" max="10" step="0.01" value="1" required></label><label>Data del voto<input name="date" type="date" required></label><label>Nota facoltativa<input name="note" maxlength="160" placeholder="es. Verifica sulle equazioni"></label></details><p class="error form-error" role="alert"></p><div class="dialog-actions"><button type="button" class="danger text-button" id="delete-grade" hidden>Elimina voto</button><button class="primary" type="submit">Salva voto</button></div></form></dialog>
-<dialog id="task-dialog"><form id="task-form"><div class="section-heading"><h2>Un nuovo impegno</h2><button type="button" class="close" data-close="task-dialog" aria-label="Chiudi">×</button></div><label>Cosa devi fare?<input name="title" required maxlength="200" placeholder="es. Ripassare il capitolo 3"></label><label>Materia<select name="subjectId"></select></label><label>Per quando?<input name="date" type="date" required></label><p class="error form-error" role="alert"></p><button type="submit" class="primary full">Aggiungi all’agenda</button></form></dialog>
-<dialog id="account-dialog"><div class="section-heading"><h2>Il tuo account</h2><button type="button" class="close" data-close="account-dialog" aria-label="Chiudi">×</button></div><p id="account-details"></p><div class="account-actions"><button class="outline" id="export">↓ Esporta backup cifrato</button><button class="outline" id="restore-account">↑ Ripristina backup cifrato</button><button id="tools-button" class="outline" type="button">Agenda e simulatore</button><button id="connection" class="outline">↗ Registro Argo · IIS Cesaris</button><button id="logout" class="outline">Esci dall’account</button></div><details><summary>Privacy e gestione dei dati</summary><p>Materie, voti, nome e agenda sono cifrati sul dispositivo con AES-GCM e una chiave derivata dalla tua password. Il nome utente resta visibile. Non memorizziamo la password e non inviamo i dati a server. Non usiamo tracker o pubblicità.</p><p>Non possiamo recuperare una password dimenticata. I backup sono cifrati: conservali e ricorda la password usata per crearli. La sincronizzazione automatica tra dispositivi e con Argo non è attiva. Per mantenere l’accesso, una chiave non esportabile è conservata su questo dispositivo. Chi usa il tuo profilo del dispositivo può aprire l’app finché non premi Esci. La cifratura non protegge da un dispositivo compromesso.</p></details><details class="delete-zone"><summary>Elimina definitivamente il mio account</summary><form id="delete-account-form"><p>Questa operazione elimina account, sessioni, materie, voti e agenda da questo dispositivo. Non elimina backup già esportati o copie su altri dispositivi.</p><label>Conferma la tua password<input name="password" type="password" required autocomplete="current-password"></label><p class="error form-error" role="alert"></p><button class="danger-button" type="submit">Elimina il mio account</button></form></details></dialog>
-<input id="restore-file" type="file" accept="application/json,.json" hidden><dialog id="restore-dialog"><form id="restore-form"><div class="section-heading"><h2>Ripristina il tuo account</h2><button type="button" class="close" data-close="restore-dialog" aria-label="Chiudi">×</button></div><p id="restore-info"></p><label>Password del backup<input name="password" type="password" required minlength="12" autocomplete="current-password"></label><label class="check-label"><input name="replace" type="checkbox"> Sostituisci l’account con lo stesso nome, se presente</label><p class="tiny">Il backup sostituisce i dati, non li unisce. Prima di procedere salva una copia dei dati attuali.</p><p class="error form-error" role="alert"></p><button type="submit" class="primary full">Ripristina e apri il registro</button></form></dialog><dialog id="argo-dialog"><div class="section-heading"><h2>Argo didUP Famiglia</h2><button class="close" data-close="argo-dialog" aria-label="Chiudi">×</button></div><div class="school-card"><b>IIS Cesaris</b><span>Codice scuola: SG18208</span></div><p>Puoi consultare il registro ufficiale nel browser. Inserisci la password solo su Argo.</p><a id="argo-login" class="primary external-login" href="https://www.portaleargo.it/famiglia/" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">Apri il login ufficiale Argo ↗</a><p class="tiny">Sincronizzazione non attiva: aprire Argo non importa i voti e non collega il tuo account. RegistroMedia non legge password, cookie o sessioni Argo.</p></dialog><script type="module" src="app.mjs"></script></body></html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; worker-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <meta name="theme-color" content="#14594e" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Votiva" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <title>Votiva</title>
+    <script src="theme.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="icon.svg" />
+  </head>
+  <body>
+    <section id="auth-view" class="auth-view" hidden>
+      <div class="auth-card">
+        <a class="brand" href="#"
+          ><img src="icon.svg" alt="" width="30" height="30" /> Votiva</a
+        >
+        <h1 id="auth-heading">Le tue medie, solo tuo.</h1>
+        <p id="auth-description">Accedi alle tue materie e ai tuoi voti.</p>
+        <div class="tabs auth-tabs">
+          <button id="login-tab" class="selected" type="button">Accedi</button
+          ><button id="register-tab" type="button">Crea account</button>
+        </div>
+        <form id="auth-form">
+          <label id="name-label" hidden
+            >Nome (facoltativo)<input
+              name="name"
+              maxlength="60"
+              autocomplete="given-name"
+              placeholder="Come ti chiami?" /></label
+          ><label
+            >Nome utente<input
+              name="username"
+              required
+              minlength="3"
+              maxlength="40"
+              pattern="[A-Za-z0-9._-]+"
+              autocomplete="username"
+              autocapitalize="none"
+              spellcheck="false"
+              placeholder="Il tuo nome utente" /></label
+          ><label
+            >Password<input
+              id="login-password"
+              name="password"
+              required
+              type="password"
+              minlength="12"
+              maxlength="128"
+              autocomplete="current-password"
+              placeholder="Almeno 12 caratteri" /></label
+          ><button
+            type="button"
+            class="text-button"
+            data-password="#login-password"
+          >
+            Mostra password</button
+          ><label id="confirm-label" hidden
+            >Conferma password<input
+              name="confirm"
+              type="password"
+              minlength="12"
+              maxlength="128"
+              autocomplete="new-password"
+          /></label>
+          <p id="auth-error" class="error" role="alert"></p>
+          <button class="primary full" type="submit" id="auth-submit">
+            Accedi
+          </button>
+        </form>
+        <p class="tiny">
+          Resterai collegato su questo dispositivo finché non premi <b>Esci</b>.
+          Usalo solo su un dispositivo personale.
+        </p>
+        <p id="recovery-note" class="tiny" hidden>
+          Non possiamo recuperare una password dimenticata. Conserva un backup
+          cifrato dei tuoi dati.
+        </p>
+        <button class="text-button full" id="restore-auth" type="button">
+          Ripristina un backup
+        </button>
+      </div>
+    </section>
+    <div id="app-view" hidden>
+      <header class="topbar">
+        <a class="brand" href="#"
+          ><img src="icon.svg" alt="" width="30" height="30" /> Votiva</a
+        >
+        <div class="top-actions">
+          <label class="theme-label"
+            ><span class="sr-only">Tema</span
+            ><select id="theme-select" aria-label="Tema">
+              <option value="system">Tema automatico</option>
+              <option value="light">Chiaro</option>
+              <option value="dark">Scuro</option>
+            </select></label
+          ><button
+            id="account-button"
+            class="account-button"
+            aria-label="Account e dati"
+          >
+            <span id="avatar">S</span><span id="account-name">Account</span>
+          </button>
+        </div>
+      </header>
+      <main>
+        <section class="page-heading">
+          <div>
+            <h1>Le tue medie</h1>
+            <p id="greeting">Materie, voti e medie. Tutto qui.</p>
+          </div>
+          <div class="main-actions">
+            <button id="add-grade" class="primary">＋ Aggiungi voto</button>
+          </div>
+        </section>
+        <div class="toolbar">
+          <div class="tabs" role="group" aria-label="Periodo">
+            <button data-period="first">Trimestre</button
+            ><button data-period="second">Pentamestre</button
+            ><button data-period="all">Anno intero</button>
+          </div>
+          <label class="year-label"
+            ><span class="sr-only">Anno scolastico</span
+            ><select id="year-select" aria-label="Anno scolastico"></select
+          ></label>
+        </div>
+        <section class="summary" aria-label="Riepilogo">
+          <div>
+            <span class="label">Media generale</span>
+            <div class="average-line">
+              <strong id="average">—</strong
+              ><span id="average-status" class="status-tag">Nessun voto</span>
+            </div>
+            <p>Media delle materie con voti</p>
+          </div>
+          <div class="summary-details">
+            <span><b id="count">0</b> voti</span
+            ><span><b id="recover">0</b> materie sotto il 6</span>
+          </div>
+        </section>
+        <section class="register-panel">
+          <div class="register-nav">
+            <div class="view-tabs" role="tablist" aria-label="Registro">
+              <button
+                id="subjects-tab"
+                role="tab"
+                aria-selected="true"
+                aria-controls="subjects-view"
+                class="active"
+              >
+                Materie <span id="subject-count">0</span></button
+              ><button
+                id="grades-tab"
+                role="tab"
+                aria-selected="false"
+                aria-controls="grades-view"
+              >
+                Voti
+              </button>
+            </div>
+            <button class="text-button" id="add-subject">
+              ＋ Aggiungi materia
+            </button>
+          </div>
+          <div
+            id="subjects-view"
+            role="tabpanel"
+            aria-labelledby="subjects-tab"
+          >
+            <div id="subject-list"></div>
+          </div>
+          <div
+            id="grades-view"
+            role="tabpanel"
+            aria-labelledby="grades-tab"
+            hidden
+          >
+            <label class="history-filter"
+              >Materia<select
+                id="history-subject"
+                aria-label="Filtra voti per materia"
+              ></select
+            ></label>
+            <div id="grade-list"></div>
+          </div>
+        </section>
+        <section class="insights">
+          <div class="insights-heading">
+            <div>
+              <h2>Le medie per materia</h2>
+              <p>Scala da 0 a 10</p>
+            </div>
+            <div class="pass-stat">
+              <strong id="pass-rate">—</strong
+              ><span id="pass-detail">Voti sufficienti</span>
+            </div>
+          </div>
+          <div id="chart" class="chart"></div>
+        </section>
+        <footer>
+          <span id="sync-status" role="status">Salvato sul dispositivo</span
+          ><span>Votiva · Offline e personale</span>
+        </footer>
+      </main>
+    </div>
+    <div id="loading-view" class="loading-view">Apro il tuo registro…</div>
+    <p id="message" class="toast" role="status" hidden></p>
+
+    <dialog id="subject-dialog">
+      <form id="subject-form">
+        <div class="section-heading">
+          <h2 id="subject-dialog-title">Una nuova materia</h2>
+          <button
+            type="button"
+            class="close"
+            data-close="subject-dialog"
+            aria-label="Chiudi"
+          >
+            ×
+          </button>
+        </div>
+        <label
+          >Nome della materia<input
+            name="name"
+            required
+            maxlength="80"
+            placeholder="es. Matematica"
+        /></label>
+        <p class="error form-error" role="alert"></p>
+        <div class="dialog-actions">
+          <button
+            type="button"
+            class="danger text-button"
+            id="delete-subject"
+            hidden
+          >
+            Elimina materia</button
+          ><button class="primary" type="submit">Salva materia</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="grade-dialog">
+      <form id="grade-form">
+        <div class="section-heading">
+          <h2 id="grade-dialog-title">Aggiungi voto</h2>
+          <button
+            type="button"
+            class="close"
+            data-close="grade-dialog"
+            aria-label="Chiudi"
+          >
+            ×
+          </button>
+        </div>
+        <label>Materia<select name="subjectId" required></select></label
+        ><label
+          >Che voto hai preso?<select
+            class="grade-input"
+            name="value"
+            required
+            aria-label="Voto"
+          ></select
+        ></label>
+        <div class="form-row">
+          <label
+            >Tipo<select name="type">
+              <option>Orale</option>
+              <option>Scritto</option>
+              <option>Pratico</option>
+            </select></label
+          >
+        </div>
+        <p class="auto-date" id="grade-auto-date"></p>
+        <details>
+          <summary>Data, peso o nota</summary>
+          <label
+            >Peso<input
+              name="weight"
+              type="number"
+              min="0.01"
+              max="10"
+              step="0.01"
+              value="1"
+              required /></label
+          ><label>Data del voto<input name="date" type="date" required /></label
+          ><label
+            >Nota facoltativa<input
+              name="note"
+              maxlength="160"
+              placeholder="es. Verifica sulle equazioni"
+          /></label>
+        </details>
+        <p class="error form-error" role="alert"></p>
+        <div class="dialog-actions">
+          <button
+            type="button"
+            class="danger text-button"
+            id="delete-grade"
+            hidden
+          >
+            Elimina voto</button
+          ><button class="primary" type="submit">Salva voto</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="account-dialog">
+      <div class="section-heading">
+        <h2>Il tuo account</h2>
+        <button
+          type="button"
+          class="close"
+          data-close="account-dialog"
+          aria-label="Chiudi"
+        >
+          ×
+        </button>
+      </div>
+      <p id="account-details"></p>
+      <div class="account-actions">
+        <button class="outline" id="export">↓ Esporta backup cifrato</button
+        ><button class="outline" id="restore-account">
+          ↑ Ripristina backup cifrato</button
+        ><button id="period-settings" class="outline">Date dei periodi</button
+        ><button id="logout" class="outline">Esci dall’account</button>
+      </div>
+      <details>
+        <summary>Privacy e gestione dei dati</summary>
+        <p>
+          Materie, voti, nome sono cifrati sul dispositivo con AES-GCM e una
+          chiave derivata dalla tua password. Il nome utente resta visibile. Non
+          memorizziamo la password e non inviamo i dati a server. Non usiamo
+          tracker o pubblicità.
+        </p>
+        <p>
+          Non possiamo recuperare una password dimenticata. I backup sono
+          cifrati: conservali e ricorda la password usata per crearli. I
+          dispositivi non si sincronizzano automaticamente. Per mantenere
+          l’accesso, una chiave non esportabile è conservata su questo
+          dispositivo. Chi usa il tuo profilo del dispositivo può aprire l’app
+          finché non premi Esci. La cifratura non protegge da un dispositivo
+          compromesso.
+        </p>
+      </details>
+      <details>
+        <summary>Password</summary>
+        <p class="tiny">
+          La password attuale non è conservata. Puoi mostrarla mentre la scrivi
+          o cambiarla qui.
+        </p>
+        <form id="password-form">
+          <label
+            >Password attuale<input
+              name="currentPassword"
+              id="current-password"
+              type="password"
+              required
+              autocomplete="current-password" /></label
+          ><button
+            type="button"
+            class="text-button"
+            data-password="#current-password"
+          >
+            Mostra</button
+          ><label
+            >Nuova password<input
+              name="newPassword"
+              id="new-password"
+              type="password"
+              minlength="12"
+              maxlength="128"
+              required
+              autocomplete="new-password" /></label
+          ><button
+            type="button"
+            class="text-button"
+            data-password="#new-password"
+          >
+            Mostra</button
+          ><label
+            >Conferma nuova password<input
+              name="confirm"
+              type="password"
+              required
+              minlength="12"
+              maxlength="128"
+              autocomplete="new-password"
+          /></label>
+          <p class="error form-error" role="alert"></p>
+          <button class="primary" type="submit">Aggiorna password</button>
+        </form>
+      </details>
+      <details>
+        <summary>Usare Votiva su iPhone</summary>
+        <p>
+          Apri il sito Votiva in Safari, poi Condividi → Aggiungi alla schermata
+          Home. Il primo accesso richiede una connessione; in seguito funziona
+          offline. Il sito deve essere pubblicato in HTTPS: il file APK e
+          l’installer Windows non funzionano su iPhone.
+        </p>
+        <p>
+          Per trasferire i voti usa un backup cifrato. Gli account sono locali e
+          non si sincronizzano.
+        </p>
+      </details>
+      <details class="delete-zone">
+        <summary>Elimina definitivamente il mio account</summary>
+        <form id="delete-account-form">
+          <p>
+            Questa operazione elimina account, sessioni, materie, voti da questo
+            dispositivo. Non elimina backup già esportati o copie su altri
+            dispositivi.
+          </p>
+          <label
+            >Conferma la tua password<input
+              name="password"
+              type="password"
+              required
+              autocomplete="current-password"
+          /></label>
+          <p class="error form-error" role="alert"></p>
+          <button class="danger-button" type="submit">
+            Elimina il mio account
+          </button>
+        </form>
+      </details>
+    </dialog>
+    <input
+      id="restore-file"
+      type="file"
+      accept="application/json,.json"
+      hidden
+    />
+    <dialog id="restore-dialog">
+      <form id="restore-form">
+        <div class="section-heading">
+          <h2>Ripristina il tuo account</h2>
+          <button
+            type="button"
+            class="close"
+            data-close="restore-dialog"
+            aria-label="Chiudi"
+          >
+            ×
+          </button>
+        </div>
+        <p id="restore-info"></p>
+        <label
+          >Password del backup<input
+            name="password"
+            type="password"
+            required
+            minlength="12"
+            autocomplete="current-password" /></label
+        ><label class="check-label"
+          ><input name="replace" type="checkbox" /> Sostituisci l’account con lo
+          stesso nome, se presente</label
+        >
+        <p class="tiny">
+          Il backup sostituisce i dati, non li unisce. Prima di procedere salva
+          una copia dei dati attuali.
+        </p>
+        <p class="error form-error" role="alert"></p>
+        <button type="submit" class="primary full">
+          Ripristina e apri il registro
+        </button>
+      </form>
+    </dialog>
+    <dialog id="period-dialog">
+      <form id="period-form">
+        <div class="section-heading">
+          <h2>Periodi scolastici</h2>
+          <button
+            type="button"
+            class="close"
+            data-close="period-dialog"
+            aria-label="Chiudi"
+          >
+            ×
+          </button>
+        </div>
+        <p class="tiny">
+          Le date si ripetono ogni anno. Il pentamestre inizia il giorno dopo il
+          trimestre. I voti esclusi restano visibili in Anno intero.
+        </p>
+        <label
+          >Inizio trimestre<input name="start" type="date" required /></label
+        ><label>Fine trimestre<input name="split" type="date" required /></label
+        ><label
+          >Fine pentamestre<input name="end" type="date" required
+        /></label>
+        <p class="error form-error" role="alert"></p>
+        <button type="submit" class="primary full">Salva date</button>
+      </form>
+    </dialog>
+    <script type="module" src="app.mjs"></script>
+  </body>
+</html>

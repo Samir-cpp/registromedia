@@ -2,13 +2,13 @@ name: Publish installable apps
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
   workflow_dispatch:
     inputs:
       tag:
         description: Existing version tag to publish
         required: true
-        default: v0.4.0
+        default: v1.0.0
 permissions:
   contents: read
 concurrency:
@@ -27,7 +27,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
           cache: npm
       - name: Check tag matches app version
         run: node -e "if(process.env.RELEASE_TAG !== 'v'+require('./package.json').version) throw Error('Tag does not match package.json')"
@@ -35,6 +35,17 @@ jobs:
       - run: npm test
       - run: npx playwright install --with-deps chromium
       - run: npm run test:ui
+      - name: Package static web app
+        run: |
+          npm run dist:web
+          cd dist/web
+          zip -r "../Votiva-${RELEASE_TAG#v}-Web.zip" .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-downloads
+          path: dist/*-Web.zip
+          if-no-files-found: error
+          retention-days: 7
   windows:
     needs: verify
     runs-on: windows-latest
@@ -46,14 +57,14 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
           cache: npm
       - run: npm ci
       - run: npm run test:desktop
       - name: Build Windows installer and portable archive
         run: npx electron-builder --win nsis zip --x64 --publish never
         env:
-          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
       - name: Name portable archive
         shell: pwsh
         run: Get-ChildItem dist/*-Setup.zip | Rename-Item -NewName { $_.Name -replace '-Setup.zip$', '-Portable.zip' }
@@ -76,24 +87,24 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
           cache: npm
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: "21"
       - name: Install verified Android command-line tools
         run: bash scripts/setup-android-ci.sh
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.11.1'
+          gradle-version: "8.11.1"
       - run: npm ci
       - run: npm run android:assets
       - run: bash scripts/build-android-ci.sh
       - name: Name Android download
         run: |
           mkdir -p dist
-          cp android/app/build/outputs/apk/debug/app-debug.apk "dist/RegistroMedia-${RELEASE_TAG#v}-Android-debug.apk"
+          cp android/app/build/outputs/apk/debug/app-debug.apk "dist/Votiva-${RELEASE_TAG#v}-Android-debug.apk"
       - uses: actions/upload-artifact@v4
         with:
           name: android-download
@@ -113,13 +124,13 @@ jobs:
           persist-credentials: false
       - uses: actions/download-artifact@v4
         with:
-          pattern: '*-download*'
+          pattern: "*-download*"
           path: downloads
           merge-multiple: true
       - name: Check files and calculate checksums
         run: |
           test "$(find downloads -maxdepth 1 -name '*.exe' | wc -l)" -eq 1
-          test "$(find downloads -maxdepth 1 -name '*.zip' | wc -l)" -eq 1
+          test "$(find downloads -maxdepth 1 -name '*.zip' | wc -l)" -eq 2
           test "$(find downloads -maxdepth 1 -name '*.apk' | wc -l)" -eq 1
           cd downloads
           sha256sum ./*.exe ./*.zip ./*.apk > SHA256SUMS.txt
@@ -132,5 +143,5 @@ jobs:
             echo 'This release already exists. Keep existing downloads and signing identity; use a new version tag for another build.'
             exit 1
           fi
-          gh release create "$RELEASE_TAG" downloads/* --verify-tag --draft --prerelease --title "RegistroMedia $RELEASE_TAG · Windows e Android" --notes-file docs/release-notes.md
+          gh release create "$RELEASE_TAG" downloads/* --verify-tag --draft --prerelease --title "Votiva $RELEASE_TAG · Windows e Android" --notes-file docs/release-notes.md
           gh release edit "$RELEASE_TAG" --draft=false --prerelease

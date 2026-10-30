@@ -1,1 +1,23 @@
-{"name":"RegistroMedia · Il tuo registro personale","short_name":"RegistroMedia","lang":"it","start_url":"./","display":"standalone","background_color":"#f7f8fc","theme_color":"#292e49","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}]}
+{
+  "name": "Votiva \u00b7 Voti e medie",
+  "short_name": "Votiva",
+  "lang": "it",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f5f0",
+  "theme_color": "#14594e",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

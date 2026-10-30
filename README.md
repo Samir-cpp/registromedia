@@ -1,70 +1,85 @@
-# RegistroMedia
+# Votiva
 
-Registro personale offline per Windows, Android e web. Materie, voti e medie in una schermata semplice, senza hosting o account Argo.
+Voti e medie, senza distrazioni. App personale offline per Windows e Android, sito installabile dalla schermata Home di iPhone. Nuova identità di RegistroMedia, versione **1.0.0**.
 
-**[Scarica le app dalle Releases](https://github.com/Samir-cpp/registromedia/releases)**. Windows: installer `.exe` oppure ZIP portabile da estrarre tutta. Android: APK di prova per Android 9+, con WebView aggiornato. Non serve Node.js per usare le app.
+## Cosa trovi
 
-## Uso
+- Dieci materie iniziali: Italiano, Storia, Informatica, Sistemi e reti, Inglese, Motoria, Educazione civica, Telecomunicazioni, TPSIT e Matematica. Puoi aggiungerle, rinominarle o eliminarle.
+- Voti selezionabili ogni 0,25: da 0,25 fino a 10. Data di oggi automatica, tipo, peso e nota facoltativa.
+- Media ponderata per materia, media generale delle materie con voti, grafico e percentuale dei voti sufficienti.
+- Trimestre, pentamestre e anno intero. Date configurabili da Account → Date dei periodi; si ripetono ogni anno. La fine del trimestre può essere anche a gennaio.
+- Tutti i voti di una materia con un tocco sul suo nome; modifica ed eliminazione.
+- Rosso sotto il 6, verde dal 6, con indicazioni testuali; tema chiaro, scuro o automatico.
+- Account locale cifrato, accesso mantenuto fino a Esci, backup cifrati e cambio password.
 
-1. Crea un account locale o accedi. Resterai collegato finché scegli **Account → Esci**; non devi rifare il login a ogni apertura. Usa un dispositivo personale.
-2. Aggiungi le materie, poi i voti. La data è quella di oggi in Europe/Rome; puoi modificarla per voti precedenti. Tipo, peso e note sono facoltativi.
-3. Il primo periodo comprende **settembre–dicembre**, il secondo **gennaio–giugno**. Il periodo dipende dalla data del voto. Luglio/agosto non sono supportati come periodi valutativi.
-4. La media per materia è ponderata per il peso dei voti. La media generale è la media delle materie con voti: ogni materia conta allo stesso modo. Rosso significa media sotto il 6, verde dal 6 in su; i calcoli non sostituiscono lo scrutinio.
-5. Seleziona tema **Chiaro**, **Scuro** o **Automatico**. Agenda, obiettivi e simulatore sono sotto Account → Agenda e simulatore, fuori dalla schermata principale. I dati dell'agenda precedente sono preservati.
+Argo, riconoscimento screenshot, agenda e simulatore sono stati rimossi, insieme alle rispettive dipendenze e percorsi di accesso. Non ci sono API scolastiche, tracker o pubblicità.
 
-## Importa voti e materie
+## Installazione
 
-Apri **Importa voti e materie** e scegli fino a 5 screenshot PNG/JPG/WebP (10 MB ciascuno) oppure incolla il testo. Per un elenco senza voti scegli “Solo nomi delle materie”.
+Le nuove build sono pubblicate nella [pagina delle release](https://github.com/Samir-cpp/registromedia/releases). Controlla che la versione sia **v1.0.0**: i download 0.4 appartengono alla versione precedente.
 
-Il lettore OCR Tesseract funziona sul dispositivo, con motore e lingua italiana inclusi nelle app. Non servono chiavi API né servizi AI esterni. Le immagini e il testo OCR non sono salvati nell'account. Nel sito web i file OCR vengono scaricati solo dal sito stesso al primo utilizzo e sono memorizzati per l'uso successivo offline; le app installate includono già tutto.
+**Windows:** esegui `Votiva-1.0.0-x64-Setup.exe` oppure estrai tutto `Votiva-1.0.0-x64-Portable.zip` e apri `Votiva.exe`. La build non ha certificato di firma commerciale.
 
-**Controlla l'anteprima prima di confermare.** Puoi cambiare materia, voto, data, tipo e peso, deselezionare o rimuovere righe. Nessuna modifica viene salvata prima della conferma; tutte le righe selezionate devono essere valide. Se manca la data, non viene inventata né sostituita con oggi. Per date senza anno, scegli l'anno scolastico prima della lettura. I segni 6+/6− non vengono convertiti arbitrariamente. I voti con stessa materia, data, valore, tipo e peso già presenti vengono saltati: eventuali valutazioni legittimamente identiche vanno aggiunte a mano.
+**Android:** installa `Votiva-1.0.0-Android-debug.apk`, Android 9 o successivo con System WebView aggiornato. L’APK usa una firma di sviluppo: se non è compatibile con la vecchia firma, esporta un backup e conserva la password **prima di disinstallare**. Non cancellare i dati dell’app senza backup.
 
-Qualità e disposizione dello screenshot incidono sul riconoscimento: nessuna garanzia di lettura corretta per tutti i layout Argo. Scegli immagini nitide contenenti materia, voto e data. Il lettore riconosce testo italiano e numeri; non PDF o accesso diretto al registro. L'anteprima va sempre corretta se il testo è ambiguo. Il pulsante Argo nelle impostazioni apre solo il sito ufficiale, senza acquisire password o cookie.
+**iPhone / iPad:** apri il sito pubblicato in Safari → Condividi → Aggiungi alla schermata Home. Primo accesso online; poi l’app funziona offline, anche dopo aver chiuso Safari. APK ed EXE non si installano su iOS. Il sito deve usare HTTPS, non basta aprire `index.html` da File.
 
-## Account, dati e backup
+### Pubblicare il sito gratuitamente su GitHub Pages
 
-L'account è locale al dispositivo. Esporta da **Account → Esporta backup cifrato** e importa quel file sull'altro dispositivo con **Ripristina un backup**. Il ripristino sostituisce l'account omonimo, non unisce i dati. I backup versione 3 delle release 0.3 sono compatibili. Non c'è sincronizzazione automatica né recupero password.
+Il proprietario del repository può fare questa configurazione una sola volta:
 
-I dati sono cifrati in IndexedDB con AES-256-GCM, IV casuale da 96 bit e PBKDF2-HMAC-SHA-256 (600.000 iterazioni, salt casuale da 128 bit). Il nome utente e i parametri crittografici restano visibili; password e dati non vengono trasmessi. Per l'accesso persistente viene conservata in IndexedDB una **CryptoKey non esportabile**: chi usa il tuo profilo del dispositivo può aprire il registro finché non premi Esci. Esci rimuove quella chiave salvata e chiude le altre finestre dell'app; il backup richiede sempre la password. La cifratura non protegge da un dispositivo compromesso o da chi ha già accesso al profilo sbloccato. Nessuna revisione di sicurezza indipendente.
+1. Repository → **Settings → Pages → Source: GitHub Actions**.
+2. **Actions → Publish iPhone and web app → Run workflow**, ramo `main`.
+3. Apri l’indirizzo mostrato dal job di deploy, normalmente `https://samir-cpp.github.io/registromedia/`.
+4. Ripeti il workflow quando vuoi aggiornare il sito.
 
-La migrazione IndexedDB aggiunge lo spazio per la sessione senza cancellare gli account esistenti. Le modifiche concorrenti tra finestre sono controllate da revisioni; una scrittura obsoleta viene rifiutata. I vecchi dati in localStorage delle versioni 0.1/0.2 rimangono intatti ma non sono migrati automaticamente. Disinstallare l'app o cancellare i dati del browser può eliminare l'archivio: conserva password e backup prima degli aggiornamenti.
+L’indirizzo è utilizzabile solo dopo il deploy riuscito. Pages serve esclusivamente i file dell’app: materie, password e voti restano nel browser. Pubblicare il sito non sincronizza gli account. Il bundle statico può anche essere ospitato da qualsiasi server HTTPS.
 
-## Sviluppo
+## Dati e password
 
-Node.js 24:
+L’account esiste sul dispositivo, non su un server. Username visibile; nome, voti, materie e impostazioni cifrati con AES-256-GCM e PBKDF2-SHA256 (600.000 iterazioni). Nessuna password salvata o inviata. **Mostra password** rende visibile solo quello che stai digitando; l’app non può recuperare la password originale. Account → Password permette di cambiarla verificando quella attuale.
+
+La chiave non esportabile salvata in IndexedDB mantiene l’accesso. Chi può usare il tuo profilo del dispositivo può aprire Votiva fino a **Esci**. Non c’è recupero password. Usa un dispositivo personale protetto dal blocco schermo.
+
+Per trasferire i voti: **Account → Esporta backup cifrato**; sull’altro dispositivo **Ripristina backup** e password del backup. Il ripristino sostituisce, non unisce. I backup precedenti al cambio password richiedono ancora la vecchia password. Safari può eliminare dati del sito: salva periodicamente un backup in File/iCloud Drive.
+
+I backup cifrati formato 3 di RegistroMedia 0.3/0.4 restano compatibili; le materie esistenti non vengono sostituite da quelle predefinite. I vecchi dati agenda e obiettivi sono conservati solo per compatibilità dell’archivio, senza funzioni o schermate per usarli. I dati non cifrati 0.1/0.2 non sono migrati automaticamente. Identificatori Android, database, protocollo desktop e cartella Windows `RegistroMedia` restano stabili per conservare l’archivio dopo il cambio nome.
+
+## Sviluppo e verifiche
+
+Richiede Node.js 24+.
 
 ```sh
 npm ci
-npm start
 npm test
-npx playwright install chromium
+npm start
+```
+
+Apri `http://localhost:3000`. Per i test browser:
+
+```sh
+npx playwright install --with-deps chromium
 npm run test:ui
 ```
 
-Il server statico usa `127.0.0.1:3000`; non riceve credenziali, immagini o voti. Servono Web Crypto e IndexedDB. Per il browser Chromium già presente: `CHROMIUM_PATH=/usr/bin/chromium npm run test:ui`.
+Se Chromium è già installato puoi impostare `CHROMIUM_PATH=/usr/bin/chromium`. Il test copre account, voti, medie, percentuali, date, cambio password, backup, sessioni, temi, offline e larghezze 320–1920 px. I test unitari coprono anche migrazione e conflitti di scrittura. I controlli automatici non garantiscono assenza di bug o compatibilità con ogni dispositivo fisico.
 
-`npm ci` prepara `vendor/ocr` da pacchetti bloccati nel lockfile (Tesseract.js 6.0.1, core e lingua italiana). Non vengono scaricati modelli da CDN all'avvio del lettore. CSP consente worker locali e compilazione WASM, senza `unsafe-eval` JavaScript. Le licenze OCR sono incluse nel pacchetto. Le risorse generate non vanno versionate: rigenerare con `npm run ocr:assets`.
+```sh
+npm run desktop
+npm run test:desktop
+npm run dist:win
+npm run android:assets
+npm run dist:web
+```
 
-## Build
+Windows: build su Windows con Electron Builder. Android: JDK 21, Gradle 8.11.1, SDK 35 e build tools 35.0.0; `gradle --project-dir android assembleDebug lintDebug`. Il sito statico è in `dist/web`, senza dipendenze o dati personali. I workflow separati costruiscono Windows e Android; il workflow release verifica il tag, esegue i test e pubblica tutti gli asset con checksum solo se entrambe le build passano.
 
-- Windows: `npm run desktop`, `npm run dist:win` (NSIS) o `npm run dist:win:portable` (ZIP). NSIS su Linux richiede Wine. Non è presente una firma digitale Windows.
-- Android: JDK 17/21 completo, Gradle 8.11.1, SDK 35 e Build Tools 35.0.0; `npm run android:assets`, poi `gradle --project-dir android assembleDebug lintDebug`. Le risorse OCR sono copiate nell'APK; WebViewAssetLoader serve solo i file inclusi nell'app, bloccando richieste remote. Import immagini/JSON tramite selettore file e due canali nativi limitati all'origine locale: esportazione di backup già cifrati e applicazione del tema. Nessun accesso generale a foto, contatti o posizione. Backup di sistema Android disabilitati.
-- Il workflow **Publish installable apps** su tag `v*` verifica il codice e il vero OCR su uno screenshot sintetico, compila le app e pubblica una prerelease solo se tutti i job passano. Il tag deve corrispondere a `package.json`. Le chiavi private non vanno versionate.
+Non servono Tesseract, modelli OCR, account Argo o chiavi API. Electron resta la componente principale dello spazio occupato su Windows: la rimozione dei modelli alleggerisce l’app, ma non elimina il runtime desktop.
 
-Gli APK di sviluppo del runner possono avere una firma diversa a ogni build, impedendo un aggiornamento diretto. **Esporta prima un backup**; se serve disinstallare la copia precedente, ripristinalo dopo l'installazione. Per aggiornamenti stabili è necessaria una chiave di firma release privata e conservata in modo sicuro; non è stata configurata.
+## Documentazione
 
-Il frontend è responsive per iPhone; per usarlo da Safari serve un indirizzo HTTPS raggiungibile. Non è stato pubblicato un sito né creata un'app iOS nativa.
+- [Relazione tecnica e funzionale](docs/PROJECT-DOCUMENTATION.md)
+- [WBS](docs/WBS.md) e [CSV per Excel](docs/wbs.csv)
+- [Documento PDF](docs/documents/RegistroMedia-Documentazione-Completa.pdf) e [Word modificabile](docs/documents/RegistroMedia-Documentazione-Completa.docx)
 
-## Verifica
-
-Test Node per medie, date, parser, duplicati, cifratura, accesso persistente, Esci, migrazione degli account e ripristino di backup. Smoke Chromium desktop/mobile con OCR reale locale su screenshot sintetico, correzione delle date mancanti, conferma esplicita, riavvio del browser senza login, logout tra finestre, temi, colori e uso offline. Nessun dato reale dello studente usato nei test. Le prove nel browser e le build non sostituiscono il collaudo su telefoni e PC reali.
-
-## Documentazione di progetto
-
-- [Relazione completa e WBS — PDF](docs/documents/RegistroMedia-Documentazione-Completa.pdf)
-- [Versione Word modificabile](docs/documents/RegistroMedia-Documentazione-Completa.docx)
-- [WBS leggibile su GitHub](docs/WBS.md) e [dizionario WBS per Excel — CSV](docs/wbs.csv)
-- [Sorgente della relazione](docs/PROJECT-DOCUMENTATION.md)
-
-La relazione descrive la baseline 0.4.0, con funzioni, formule, architettura, dati, OCR, sicurezza, installazione, verifiche e limiti. La WBS contiene 44 pacchetti con stati distinti tra realizzato, da validare e pianificato; non inventa costi o scadenze. Per rigenerare PDF/Word: installare i requisiti di `docs/requirements-docs.txt` e usare `python3 scripts/build-project-docs.py`. L'esportatore usa i font DejaVu in `/usr/share/fonts/truetype/dejavu`, disponibili nell'ambiente di generazione; adattare il percorso su altri sistemi.
+Per rigenerare PDF e Word: `python -m pip install -r docs/requirements-docs.txt`, poi `python scripts/build-project-docs.py`. Il renderer usa DejaVu Sans in `/usr/share/fonts/truetype/dejavu`; su altri sistemi adatta il percorso nel renderer.

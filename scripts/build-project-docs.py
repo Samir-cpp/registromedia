@@ -20,10 +20,10 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak, 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'docs' / 'documents'
 OUT.mkdir(parents=True, exist_ok=True)
-TITLE = 'RegistroMedia — Documentazione completa e WBS'
+TITLE = 'Votiva — Documentazione completa e WBS'
 DATE = '30 ottobre 2026'
-NAVY = '#24304A'
-ACCENT = '#3F57CD'
+NAVY = '#193B31'
+ACCENT = '#14594E'
 MUTED = '#626E80'
 FONTROOT = Path('/usr/share/fonts/truetype/dejavu')
 for name, file in [('DocSans', 'DejaVuSans.ttf'), ('DocSans-Bold', 'DejaVuSans-Bold.ttf'), ('DocSans-Oblique', 'DejaVuSans-Oblique.ttf')]:
@@ -107,11 +107,11 @@ class PageCanvas(canvas.Canvas):
             self.line(54, 39, width - 54, 39)
             self.setFillColor(colors.HexColor(MUTED))
             self.setFont('DocSans', 7)
-            self.drawString(54, 26, 'RegistroMedia | Documento 1.0 | ' + DATE)
+            self.drawString(54, 26, 'Votiva | Documento 2.0 | ' + DATE)
             self.drawRightString(width - 54, 26, f'{self._pageNumber} / {total}')
             if self._pageNumber > 1:
                 self.setFont('DocSans-Bold', 7)
-                self.drawString(54, height - 32, 'REGISTROMEDIA / RELAZIONE E WBS / SOFTWARE 0.4.0')
+                self.drawString(54, height - 32, 'VOTIVA / RELAZIONE E WBS / SOFTWARE 1.0.0')
             canvas.Canvas.showPage(self)
         canvas.Canvas.save(self)
 
@@ -136,30 +136,30 @@ for name, size in [('Title', 34), ('Heading 1', 23), ('Heading 2', 16), ('Headin
     style.paragraph_format.space_after = Pt(8)
 word.core_properties.title = TITLE
 word.core_properties.subject = 'Registro personale offline — architettura, manuale, verifiche e WBS'
-word.core_properties.author = 'RegistroMedia'
+word.core_properties.author = 'Votiva'
 header = sec.header.paragraphs[0]
-run = header.add_run('REGISTROMEDIA  /  RELAZIONE E WBS  /  SOFTWARE 0.4.0')
+run = header.add_run('VOTIVA  /  RELAZIONE E WBS  /  SOFTWARE 1.0.0')
 run.font.size = Pt(8)
 run.font.color.rgb = RGBColor.from_string(MUTED[1:])
 footer = sec.footer.paragraphs[0]
-footer.add_run('Documento 1.0 | ' + DATE + '    ·    Pagina ')
+footer.add_run('Documento 2.0 | ' + DATE + '    ·    Pagina ')
 fld = OxmlElement('w:fldSimple'); fld.set(qn('w:instr'), 'PAGE'); footer._p.append(fld)
 for r in footer.runs: r.font.size = Pt(8)
 
-story = [Spacer(1, 55), Paragraph('REGISTROMEDIA', styles['cover_label']), Spacer(1, 25),
+story = [Spacer(1, 55), Paragraph('VOTIVA', styles['cover_label']), Spacer(1, 25),
          Paragraph('Documentazione<br/>completa del progetto', styles['cover_title']), Spacer(1, 25),
          Paragraph('Relazione tecnica, guida funzionale<br/>e Work Breakdown Structure', styles['cover_sub']),
-         Spacer(1, 45), Paragraph('Software 0.4.0 · Prerelease personale offline', styles['p']),
+         Spacer(1, 45), Paragraph('Software 1.0.0 · Registro personale offline', styles['p']),
          Paragraph('Windows · Android · Frontend web', styles['p']), Spacer(1, 40),
-         Paragraph('Documento 1.0 — ' + DATE, styles['p']),
-         Paragraph('Base: codice f17d702. Stati realizzati, verifiche e attività future esplicitamente distinti.', styles['p']),
+         Paragraph('Documento 2.0 — ' + DATE, styles['p']),
+         Paragraph('Perimetro: Votiva 1.0.0. Stati realizzati, verifiche e attività future esplicitamente distinti.', styles['p']),
          Spacer(1, 30), Paragraph('Nessun dato personale reale, password o chiave privata è incluso in questo documento.', styles['p']), PageBreak()]
-word.add_paragraph('REGISTROMEDIA', 'Subtitle')
+word.add_paragraph('VOTIVA', 'Subtitle')
 word.add_paragraph('Documentazione completa del progetto', 'Title')
 word.add_paragraph('Relazione tecnica, guida funzionale e Work Breakdown Structure', 'Subtitle')
-word.add_paragraph('Software 0.4.0 · Prerelease personale offline\nWindows · Android · Frontend web')
-word.add_paragraph('Documento 1.0 — ' + DATE)
-word.add_paragraph('Base: codice f17d702. Stati realizzati, verifiche e attività future esplicitamente distinti.')
+word.add_paragraph('Software 1.0.0 · Registro personale offline\nWindows · Android · Frontend web')
+word.add_paragraph('Documento 2.0 — ' + DATE)
+word.add_paragraph('Perimetro: Votiva 1.0.0. Stati realizzati, verifiche e attività future esplicitamente distinti.')
 word.add_paragraph('Nessun dato personale reale, password o chiave privata è incluso in questo documento.')
 word.add_page_break()
 
@@ -204,6 +204,6 @@ for source in ['PROJECT-DOCUMENTATION.md', 'WBS.md']:
 
 pdf = OUT / 'RegistroMedia-Documentazione-Completa.pdf'
 docx = OUT / 'RegistroMedia-Documentazione-Completa.docx'
-SimpleDocTemplate(str(pdf), pagesize=A4, leftMargin=54, rightMargin=54, topMargin=56, bottomMargin=54, title=TITLE, author='RegistroMedia').build(story, canvasmaker=PageCanvas)
+SimpleDocTemplate(str(pdf), pagesize=A4, leftMargin=54, rightMargin=54, topMargin=56, bottomMargin=54, title=TITLE, author='Votiva').build(story, canvasmaker=PageCanvas)
 word.save(docx)
 print('Creati:', pdf, docx)

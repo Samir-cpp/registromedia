@@ -1,21 +1,19 @@
-RegistroMedia 0.4 · più semplice, con importazione da screenshot.
+# Votiva 1.0.0
 
-## Novità
+Nuovo nome e logo, registro più essenziale, layout per telefono, tablet e desktop. Rimossi collegamenti Argo, importazione screenshot/OCR, agenda e simulatore; rimossi modelli e dipendenze OCR dal pacchetto.
 
-- Una sola schermata con media generale e due schede: Materie e Voti.
-- Rosso sotto il 6, verde dal 6 in su, anche con indicazioni testuali.
-- Tema chiaro, scuro o automatico, con preferenza salvata.
-- Resti collegato dopo aver chiuso e riaperto l’app, finché non scegli **Account → Esci**. Non c'è più il blocco automatico dopo 15 minuti. Usa questa funzione solo su un dispositivo personale.
-- **Importa voti e materie**: carica fino a 5 screenshot oppure incolla il testo. Riconoscimento locale, anteprima da correggere e confermare, rilevamento dei voti già presenti. Le immagini non vengono inviate a servizi esterni né salvate nell’account.
-- Per i voti vecchi la data viene letta dallo screenshot; se manca va completata. Non viene usata la data di oggi. I segni ambigui, per esempio 6+, richiedono una correzione numerica.
-- Agenda e simulatore sono disponibili in Account → Agenda e simulatore; non occupano la schermata principale. I dati precedenti non vengono cancellati.
+- Dieci materie già pronte nei nuovi account, modificabili.
+- Selettore voti da 0,25 a 10 con incrementi di 0,25.
+- Media per materia e generale, grafico e percentuale dei voti sufficienti.
+- Trimestre e pentamestre con date personalizzabili; filtro per anno e materia.
+- Temi chiaro/scuro/automatico; indicatori rosso/verde e testuali.
+- Password mostrabile durante l’inserimento e cambio password verificando quella attuale. Nessuna password memorizzata.
+- Account e backup locali cifrati, compatibilità con i backup formato 3 precedenti.
 
-## Installazione
+**Windows:** `*-Setup.exe` oppure estrai completamente `*-Portable.zip` e apri `Votiva.exe`. Installer senza firma commerciale.
 
-**Windows:** scarica `*-Setup.exe` per l'installer, oppure estrai completamente `*-Portable.zip` e apri `RegistroMedia.exe`.
+**Android:** `*-Android-debug.apk`, Android 9+. Firma di sviluppo: prima di reinstallare o disinstallare esporta il backup cifrato e conserva la password. La firma può differire da quella dell’APK precedente.
 
-**Android:** scarica `*-Android-debug.apk`. Richiede Android 9 o successivo e WebView aggiornato. Questa build ha una firma di sviluppo che può differire dalla versione precedente: **prima di disinstallare o cambiare APK, esporta il backup cifrato e conserva la password**. Se il sistema richiede di disinstallare la versione vecchia, ripristina poi quel backup.
+**iPhone:** usa il sito HTTPS in Safari e scegli Condividi → Aggiungi alla schermata Home. Il workflow Pages nel repository prepara il sito; è necessario attivare Pages e completare il deploy. Non è un’app App Store. Nessuna sincronizzazione automatica: trasferisci i dati tramite backup.
 
-I backup cifrati della versione 0.3 sono compatibili. Non c'è sincronizzazione automatica o recupero password. Il riconoscimento non è infallibile: controlla sempre materia, data e voto prima di confermare, soprattutto con schermate Argo complesse, tagliate o poco nitide.
-
-Windows non è firmato digitalmente. Versione di prova, non distribuita sugli store e non ancora collaudata su tutti i dispositivi fisici. Nessuna integrazione API Argo attiva. I checksum sono nel file `SHA256SUMS.txt`.
+La versione è verificata con test automatici, senza promessa di zero bug. Restano da verificare i dispositivi fisici e la firma di produzione. I vecchi backup richiedono la password usata alla loro creazione, anche dopo averla cambiata nell’app.

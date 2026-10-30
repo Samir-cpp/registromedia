@@ -1,4 +1,44 @@
-const CACHE='registromedia-v4-minimal';const FILES=['./','./index.html','./style.css','./app.mjs','./model.mjs','./vault.mjs','./theme.js','./import-model.mjs','./import-ui.mjs','./ocr.mjs','./argo.mjs','./icon.svg','./manifest.json'];
-self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES))));
-self.addEventListener('activate',e=>e.waitUntil(Promise.all([caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('registromedia-')&&k!==CACHE).map(k=>caches.delete(k)))),self.clients.claim()])));
-self.addEventListener('fetch',e=>{const url=new URL(e.request.url);if(e.request.method==='GET'&&url.origin===self.location.origin&&/^\/vendor\/ocr\//.test(url.pathname)){e.respondWith(caches.open(CACHE).then(async cache=>{const cached=await cache.match(e.request);if(cached)return cached;const response=await fetch(e.request);if(response.ok)await cache.put(e.request,response.clone());return response;}));return;}if(e.request.method==='GET'&&url.origin===self.location.origin&&FILES.includes(url.pathname==='/'?'./':'./'+url.pathname.slice(1)))e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));});
+const CACHE = "registromedia-votiva-1";
+const FILES = [
+  "./",
+  "./index.html",
+  "./style.css",
+  "./app.mjs",
+  "./model.mjs",
+  "./vault.mjs",
+  "./theme.js",
+  "./icon.svg",
+  "./icon-192.png",
+  "./icon-512.png",
+  "./apple-touch-icon.png",
+  "./manifest.json",
+];
+self.addEventListener("install", (e) =>
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES))),
+);
+self.addEventListener("activate", (e) =>
+  e.waitUntil(
+    Promise.all([
+      caches
+        .keys()
+        .then((keys) =>
+          Promise.all(
+            keys
+              .filter((k) => k.startsWith("registromedia-") && k !== CACHE)
+              .map((k) => caches.delete(k)),
+          ),
+        ),
+      self.clients.claim(),
+    ]),
+  ),
+);
+self.addEventListener("fetch", (e) => {
+  if (e.request.method !== "GET") return;
+  const url = new URL(e.request.url);
+  if (url.origin !== self.location.origin) return;
+  e.respondWith(
+    caches
+      .open(CACHE)
+      .then(async (c) => (await c.match(e.request)) || fetch(e.request)),
+  );
+});
